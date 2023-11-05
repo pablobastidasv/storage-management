@@ -1,0 +1,33 @@
+package components
+
+type (
+	Product struct {
+		Id     string
+		Name   string
+		Amount string
+		Unit   string
+	}
+	Inventory struct {
+		Items []Product
+	}
+)
+
+templ InventoryMain(inventory Inventory) {
+	@Layout() {
+		@inventoryList(inventory.Items)
+	}
+}
+
+templ inventoryList(inventory []Product) {
+	<ul>
+		for _, s := range inventory {
+			@inventoryItem(s)
+		}
+	</ul>
+}
+
+templ inventoryItem(item Product) {
+	<li>
+		{ item.Name } - { item.Amount } { item.Unit }
+	</li>
+}

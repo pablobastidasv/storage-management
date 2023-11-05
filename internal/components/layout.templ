@@ -1,0 +1,43 @@
+package components
+
+templ Layout() {
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=1024, initial-scale=1.0"/>
+    <title>
+        Inventory - Bastriguez
+    </title>
+</head>
+
+<body>
+    @header()
+
+    <main>
+    { children... }
+    </main>
+
+    @footer()
+</body>
+
+</html>
+}
+
+templ header(){
+    <header>
+        <h1>Bastriguez</h1>
+    </header>
+}
+
+templ footer(){
+    <footer>
+    </footer>
+}
+
+templ Index(){
+    @Layout() {
+        This is the content of the Index() function.
+    }
+}
