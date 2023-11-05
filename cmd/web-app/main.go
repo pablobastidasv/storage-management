@@ -1,13 +1,9 @@
 package main
 
-import (
-	"co.bastriguez/inventory/internal"
-	"co.bastriguez/inventory/internal/layouts"
-)
+import "co.bastriguez/inventory/internal/handlers"
 
 func main() {
 	addr := ":8080"
 
-	layouts.Init("templates/layouts/", "templates/")
-	internal.RunServer(addr)
+	handlers.Start(addr)
 }
