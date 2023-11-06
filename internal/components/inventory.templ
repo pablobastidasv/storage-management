@@ -14,19 +14,86 @@ type (
 
 templ InventoryMain(inventory Inventory) {
 	@Layout() {
-		@inventoryList(inventory.Items)
+		<div>
+			@storage(inventory.Items)
+			@remisions()
+			@RemisionConfirmationForm()
+			@AddToStorage()
+		</div>
 	}
 }
 
-templ inventoryList(inventory []Product) {
+templ AddToStorage() {
+	<form>
+		<h2>Ingresar al inventario</h2>
+		<div>
+			<label for="product">Product:</label>
+			<select id="product">
+				<option value="a">Product A</option>
+				<option value="b">Product B</option>
+				<option value="c">Product C</option>
+			</select>
+		</div>
+		<div>
+			<label>Cantidad:</label>
+			<input id="qty" type="number"/>
+		</div>
+		<div>
+			<input type="submit" value="Ingresar"/>
+		</div>
+	</form>
+}
+
+templ RemisionConfirmationForm() {
+	<style type="text/css">
+	#returnPanel{
+		display:none;
+	}
+	#withReturn:checked ~ #returnPanel{
+		display:block;
+		height:"100px";
+	}
+	</style>
+	<form>
+		<h2>Cerrar remisión</h2>
+		<div>
+			Client: Client A
+		</div>
+		<div>
+			Producto: Producto W
+		</div>
+		<div>
+			<input type="checkbox" name="withReturn" id="withReturn" value="0"/>
+			<label for="withReturn">La remision tiene retorno?</label>
+			<div id="returnPanel">
+				<label for="returned">Cantidad retornada</label>
+				<input id="returned" type="number"/>
+			</div>
+		</div>
+		<button type="submit">Cerrar remision</button>
+	</form>
+}
+
+templ remisions() {
+	<h2>Remisiones</h2>
+	<ul>
+		<li>Cliente A - Producto W - 15 Kilogramos <a href="#">Cerrar</a></li>
+		<li>Cliente B - Producto X - 15 Kilogramos <a href="#">Cerrar</a></li>
+		<li>Cliente C - Producto Y - 15 Kilogramos <a href="#">Cerrar</a></li>
+		<li>Cliente D - Producto Z - 15 Kilogramos <a href="#">Cerrar</a></li>
+	</ul>
+}
+
+templ storage(inventory []Product) {
+	<h2>En inventario</h2>
 	<ul>
 		for _, s := range inventory {
-			@inventoryItem(s)
+			@productInStorage(s)
 		}
 	</ul>
 }
 
-templ inventoryItem(item Product) {
+templ productInStorage(item Product) {
 	<li>
 		{ item.Name } - { item.Amount } { item.Unit }
 	</li>
