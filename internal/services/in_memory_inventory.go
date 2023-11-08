@@ -32,15 +32,7 @@ func NewInMemoryInventoryService() InventoryService {
 			},
 		},
 	}
-	return service
-}
-
-func (m InMemoryInventoryService) RetrieveInventory() []entities.InventoryContent {
-	return m.storage.Content
-}
-
-func (m InMemoryInventoryService) RetrieveOpenRemissions() []entities.Remission {
-	m.remissions = []entities.Remission{
+	service.remissions = []entities.Remission{
 		{
 			Id: "A",
 			Client: entities.Client{
@@ -65,5 +57,13 @@ func (m InMemoryInventoryService) RetrieveOpenRemissions() []entities.Remission 
 		},
 	}
 
+	return service
+}
+
+func (m InMemoryInventoryService) RetrieveInventory() []entities.InventoryContent {
+	return m.storage.Content
+}
+
+func (m InMemoryInventoryService) RetrieveOpenRemissions() []entities.Remission {
 	return m.remissions
 }
