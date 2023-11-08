@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -37,8 +38,24 @@ func (h WebInventoryHandler) Index(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	var remissions []components.Remission
+
+	for _, remission := range h.service.RetrieveOpenRemissions() {
+		ammount := fmt.Sprintf("%d %s", remission.Qty, translateUnit(remission.Product.Presentation))
+		remissions = append(remissions, components.Remission{
+			Id:         remission.Id,
+			ClientName: remission.Client.Name,
+			Amount:     ammount,
+			Product: components.Product{
+				Id:   remission.Product.Id,
+				Name: remission.Product.Name,
+			},
+		})
+	}
+
 	inventory := components.Inventory{
-		Items: items,
+		Products:   items,
+		Remissions: remissions,
 	}
 	components.InventoryMain(inventory).Render(r.Context(), w)
 }

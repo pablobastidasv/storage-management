@@ -7,16 +7,24 @@ type (
 		Amount string
 		Unit   string
 	}
+	Remission struct {
+		Id         string
+		ClientName string
+		Product    Product
+		Amount     string
+	}
+
 	Inventory struct {
-		Items []Product
+		Products   []Product
+		Remissions []Remission
 	}
 )
 
 templ InventoryMain(inventory Inventory) {
 	@Layout() {
 		<div>
-			@storage(inventory.Items)
-			@remisions()
+			@storage(inventory.Products)
+			@Remissions(inventory.Remissions)
 			@RemisionConfirmationForm()
 			@AddToStorage()
 		</div>
@@ -74,13 +82,15 @@ templ RemisionConfirmationForm() {
 	</form>
 }
 
-templ remisions() {
+templ Remissions(remissions []Remission) {
 	<h2>Remisiones</h2>
 	<ul>
-		<li>Cliente A - Producto W - 15 Kilogramos <a href="#">Cerrar</a></li>
-		<li>Cliente B - Producto X - 15 Kilogramos <a href="#">Cerrar</a></li>
-		<li>Cliente C - Producto Y - 15 Kilogramos <a href="#">Cerrar</a></li>
-		<li>Cliente D - Producto Z - 15 Kilogramos <a href="#">Cerrar</a></li>
+		for _, remission := range remissions {
+			<li>
+				{ remission.ClientName } - { remission.Product.Name } - { remission.Amount } { remission.Product.Unit }
+				<a href="#">Cerrar</a>
+			</li>
+		}
 	</ul>
 }
 

@@ -3,7 +3,8 @@ package services
 import "co.bastriguez/inventory/internal/entities"
 
 type InMemoryInventoryService struct {
-	storage entities.Storage
+	storage    entities.Storage
+	remissions []entities.Remission
 }
 
 func NewInMemoryInventoryService() InventoryService {
@@ -36,4 +37,33 @@ func NewInMemoryInventoryService() InventoryService {
 
 func (m InMemoryInventoryService) RetrieveInventory() []entities.InventoryContent {
 	return m.storage.Content
+}
+
+func (m InMemoryInventoryService) RetrieveOpenRemissions() []entities.Remission {
+	m.remissions = []entities.Remission{
+		{
+			Id: "A",
+			Client: entities.Client{
+				Name: "Client A",
+			},
+			Product: entities.Product{
+				Name:         "Product W",
+				Presentation: entities.KG,
+			},
+			Qty: 15,
+		},
+		{
+			Id: "B",
+			Client: entities.Client{
+				Name: "Client B",
+			},
+			Product: entities.Product{
+				Name:         "Product Z",
+				Presentation: entities.Grms,
+			},
+			Qty: 24,
+		},
+	}
+
+	return m.remissions
 }
