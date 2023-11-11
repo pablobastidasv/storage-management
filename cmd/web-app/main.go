@@ -1,9 +1,13 @@
 package main
 
-import "co.bastriguez/inventory/internal/handlers"
+import (
+	"co.bastriguez/inventory/internal/handlers"
+	"log"
+)
 
 func main() {
 	addr := ":8080"
 
-	handlers.Start(addr)
+	server := handlers.NewFiberServer()
+	log.Fatal(server.Start(addr))
 }

@@ -1,10 +1,10 @@
 package services
 
-import "co.bastriguez/inventory/internal/entities"
+import "co.bastriguez/inventory/internal/models"
 
 type (
 	InventoryService interface {
-		RetrieveInventory() []entities.InventoryContent
-		RetrieveOpenRemissions() []entities.Remission
+		RetrieveInventory() []models.InventoryContent
+		RetrieveOpenRemissions() []models.Remission
 	}
 )

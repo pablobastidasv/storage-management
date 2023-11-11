@@ -1,57 +1,57 @@
 package services
 
-import "co.bastriguez/inventory/internal/entities"
+import "co.bastriguez/inventory/internal/models"
 
 type InMemoryInventoryService struct {
-	storage    entities.Storage
-	remissions []entities.Remission
+	storage    models.Storage
+	remissions []models.Remission
 }
 
 func NewInMemoryInventoryService() InventoryService {
 	service := &InMemoryInventoryService{}
 
-	service.storage = entities.Storage{
-		Content: []entities.InventoryContent{
+	service.storage = models.Storage{
+		Content: []models.InventoryContent{
 			{
-				Product: entities.Product{
+				Product: models.Product{
 					Name: "Product A",
 				},
 				Qty: 15,
 			},
 			{
-				Product: entities.Product{
+				Product: models.Product{
 					Name: "Product B",
 				},
 				Qty: 15,
 			},
 			{
-				Product: entities.Product{
+				Product: models.Product{
 					Name: "Product C",
 				},
 				Qty: 15,
 			},
 		},
 	}
-	service.remissions = []entities.Remission{
+	service.remissions = []models.Remission{
 		{
 			Id: "A",
-			Client: entities.Client{
+			Client: models.Client{
 				Name: "Client A",
 			},
-			Product: entities.Product{
+			Product: models.Product{
 				Name:         "Product W",
-				Presentation: entities.KG,
+				Presentation: models.KG,
 			},
 			Qty: 15,
 		},
 		{
 			Id: "B",
-			Client: entities.Client{
+			Client: models.Client{
 				Name: "Client B",
 			},
-			Product: entities.Product{
+			Product: models.Product{
 				Name:         "Product Z",
-				Presentation: entities.Grms,
+				Presentation: models.Grms,
 			},
 			Qty: 24,
 		},
@@ -60,10 +60,10 @@ func NewInMemoryInventoryService() InventoryService {
 	return service
 }
 
-func (m InMemoryInventoryService) RetrieveInventory() []entities.InventoryContent {
+func (m InMemoryInventoryService) RetrieveInventory() []models.InventoryContent {
 	return m.storage.Content
 }
 
-func (m InMemoryInventoryService) RetrieveOpenRemissions() []entities.Remission {
+func (m InMemoryInventoryService) RetrieveOpenRemissions() []models.Remission {
 	return m.remissions
 }

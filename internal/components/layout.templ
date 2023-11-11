@@ -1,43 +1,38 @@
 package components
 
 templ Layout() {
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=1024, initial-scale=1.0"/>
-    <title>
-        Inventory - Bastriguez
-    </title>
-</head>
-
-<body>
-    @header()
-
-    <main>
-    { children... }
-    </main>
-
-    @footer()
-</body>
-
-</html>
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=1024, initial-scale=1.0"/>
+			<title>
+				Inventory - Bastriguez
+			</title>
+			<script src="https://unpkg.com/htmx.org@1.9.8" integrity="sha384-rgjA7mptc2ETQqXoYC3/zJvkU7K/aP44Y+z7xQuJiVnB/422P/Ak+F/AqFR7E4Wr" crossorigin="anonymous"></script>
+		</head>
+		<body>
+			@header()
+			<main>
+				{ children... }
+			</main>
+			@footer()
+		</body>
+	</html>
 }
 
-templ header(){
-    <header>
-        <h1>Bastriguez</h1>
-    </header>
+templ header() {
+	<header>
+		<h1>Bastriguez</h1>
+	</header>
 }
 
-templ footer(){
-    <footer>
-    </footer>
+templ footer() {
+	<footer></footer>
 }
 
-templ Index(){
-    @Layout() {
-        This is the content of the Index() function.
-    }
+templ Index() {
+	@Layout() {
+		This is the content of the Index() function.
+	}
 }

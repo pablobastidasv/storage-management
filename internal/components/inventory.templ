@@ -25,7 +25,7 @@ templ InventoryMain(inventory Inventory) {
 		<div>
 			@storage(inventory.Products)
 			@Remissions(inventory.Remissions)
-			@RemisionConfirmationForm()
+			<div id="remissions-form-panel"></div>
 			@AddToStorage()
 		</div>
 	}
@@ -88,7 +88,7 @@ templ Remissions(remissions []Remission) {
 		for _, remission := range remissions {
 			<li>
 				{ remission.ClientName } - { remission.Product.Name } - { remission.Amount } { remission.Product.Unit }
-				<a href="#">Cerrar</a>
+				<button hx-get="/inventory/create-remission" hx-target="#remissions-form-panel">Cerrar</button>
 			</li>
 		}
 	</ul>

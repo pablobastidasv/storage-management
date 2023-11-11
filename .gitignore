@@ -21,3 +21,11 @@
 go.work
 
 *templ.go
+
+.idea
+tmp
+
+public/node_modules
+public/dist
+
+dist

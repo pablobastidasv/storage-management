@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"co.bastriguez/inventory/internal/components"
-	"co.bastriguez/inventory/internal/entities"
+	"co.bastriguez/inventory/internal/models"
 	"co.bastriguez/inventory/internal/services"
 )
 
@@ -17,6 +17,7 @@ type (
 
 	InventoryHandler interface {
 		Index(w http.ResponseWriter, r *http.Request)
+		CreateRemission(w http.ResponseWriter, r *http.Request)
 	}
 )
 
@@ -24,6 +25,10 @@ func NewInventoryHandler(inventoryService services.InventoryService) InventoryHa
 	return &WebInventoryHandler{
 		service: inventoryService,
 	}
+}
+
+func (h WebInventoryHandler) CreateRemission(w http.ResponseWriter, r *http.Request) {
+	components.RemisionConfirmationForm().Render(r.Context(), w)
 }
 
 func (h WebInventoryHandler) Index(w http.ResponseWriter, r *http.Request) {
@@ -60,13 +65,13 @@ func (h WebInventoryHandler) Index(w http.ResponseWriter, r *http.Request) {
 	components.InventoryMain(inventory).Render(r.Context(), w)
 }
 
-func translateUnit(unit entities.Presentation) string {
+func translateUnit(unit models.Presentation) string {
 	switch unit {
-	case entities.KG:
+	case models.KG:
 		return "Kilogramos"
-	case entities.Amount:
+	case models.Amount:
 		return "Cantidad"
-	case entities.Grms:
+	case models.Grms:
 		return "Gramos"
 	default:
 		return "Desconocido"
