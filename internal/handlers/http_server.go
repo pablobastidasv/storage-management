@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"co.bastriguez/inventory/internal/components"
+	"co.bastriguez/inventory/internal/server"
 	"co.bastriguez/inventory/internal/services"
 	"github.com/a-h/templ"
 	"github.com/gorilla/mux"
@@ -11,7 +12,7 @@ import (
 
 type muxServer struct{}
 
-func NewMuxServer() Server {
+func NewMuxServer() server.Server {
 	return &muxServer{}
 }
 

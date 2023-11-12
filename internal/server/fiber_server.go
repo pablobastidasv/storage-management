@@ -1,6 +1,7 @@
-package handlers
+package server
 
 import (
+	"co.bastriguez/inventory/internal/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 )
@@ -19,10 +20,8 @@ func (f fiberServer) Start(addr string) error {
 
 	app.Static("/", "./public")
 
-	app.Get("/hello", RootHandler)
-
-	app.Get("/storages/main/products", StorageProductsHandler)
-	app.Get("/storages/main/remissions", StorageRemissionsHandler)
+	storage := app.Group("/api/storages")
+	routes.New().DefineRoutes(storage)
 
 	// Last middleware to match anything
 	app.Use(func(c *fiber.Ctx) error {
@@ -30,18 +29,6 @@ func (f fiberServer) Start(addr string) error {
 	})
 
 	return app.Listen(addr)
-}
-
-func StorageRemissionsHandler(ctx *fiber.Ctx) error {
-	return ctx.Render("remissions", nil)
-}
-
-func StorageProductsHandler(ctx *fiber.Ctx) error {
-	return ctx.Render("inventory", nil)
-}
-
-func RootHandler(ctx *fiber.Ctx) error {
-	return ctx.SendString("Hello world!!!")
 }
 
 func NewFiberServer() Server {
