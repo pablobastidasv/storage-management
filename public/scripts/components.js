@@ -1,0 +1,1 @@
+import 'https://unpkg.com/side-drawer/side-drawer.min.js'

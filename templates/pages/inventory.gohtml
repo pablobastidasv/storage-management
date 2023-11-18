@@ -1,0 +1,72 @@
+{{ define "index"}}
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+        <title>Inventarios - Bastriguez</title>
+        <script src="https://unpkg.com/htmx.org@1.9.8"></script>
+        <link rel="stylesheet" href="styles.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+              crossorigin="anonymous">
+    </head>
+    <body>
+    <header>
+        <h1>Inventarios Bastriguez</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>Bodega</h2>
+
+            <div>
+                <button class="btn btn-primary"
+                        hx-get="/inventory/product/add-form"
+                        hx-target="#right-drawer">
+                    Ingresar Producto
+                </button>
+            </div>
+
+            {{ block "inventory" .Products }}
+                <ul id="products">
+                    {{ range . }}
+                        <li>{{ .Name }} - {{ .Amount }}</li>
+                    {{end}}
+                </ul>
+            {{ end }}
+        </section>
+
+        <section>
+            <h2>Remisiones</h2>
+
+            {{ block "remissions" .Remissions }}
+                <ul id="remissions">
+                    {{ range . }}
+                        <li>
+                            {{- /*gotype: co.bastriguez/inventory/internal/routes.RemissionItem*/ -}}
+                            {{.CreatedAt.Format "02/01/2006"}} - {{.ClientName}} - {{.ProductItem.Name}}
+                            - {{.ProductItem.Amount}}
+                        </li>
+                    {{ end }}
+                </ul>
+            {{end}}
+        </section>
+    </main>
+
+    <footer>
+        2023
+    </footer>
+
+    <side-drawer id="right-drawer" right></side-drawer>
+
+    <script type="module" src="scripts/components.js"></script>
+    <script type="module" src="scripts/custom-events.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+    </body>
+    </html>
+{{ end }}

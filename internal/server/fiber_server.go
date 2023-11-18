@@ -2,6 +2,7 @@ package server
 
 import (
 	"co.bastriguez/inventory/internal/routes"
+	"co.bastriguez/inventory/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 )
@@ -20,8 +21,13 @@ func (f fiberServer) Start(addr string) error {
 
 	app.Static("/", "./public")
 
-	storage := app.Group("/api/storages")
-	routes.New().DefineRoutes(storage)
+	storageRoute := app.Group("/api/storages")
+	rootRoute := app.Group("/")
+
+	inventoryService := services.NewInMemoryInventoryService()
+	inventoryRoutes := routes.New(inventoryService)
+	inventoryRoutes.DefineRoutes(storageRoute)
+	inventoryRoutes.DefinePages(rootRoute)
 
 	// Last middleware to match anything
 	app.Use(func(c *fiber.Ctx) error {

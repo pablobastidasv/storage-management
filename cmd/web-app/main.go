@@ -8,6 +8,6 @@ import (
 func main() {
 	addr := ":8080"
 
-	server := server.NewFiberServer()
-	log.Fatal(server.Start(addr))
+	app := server.NewFiberServer()
+	log.Fatal(app.Start(addr))
 }

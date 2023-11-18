@@ -1,6 +1,9 @@
 package services
 
-import "co.bastriguez/inventory/internal/models"
+import (
+	"co.bastriguez/inventory/internal/models"
+	"time"
+)
 
 type InMemoryInventoryService struct {
 	storage    models.Storage
@@ -42,7 +45,8 @@ func NewInMemoryInventoryService() InventoryService {
 				Name:         "Product W",
 				Presentation: models.KG,
 			},
-			Qty: 15,
+			Qty:       15,
+			CreatedAt: time.Now(),
 		},
 		{
 			Id: "B",
@@ -53,14 +57,15 @@ func NewInMemoryInventoryService() InventoryService {
 				Name:         "Product Z",
 				Presentation: models.Grms,
 			},
-			Qty: 24,
+			Qty:       24,
+			CreatedAt: time.Now(),
 		},
 	}
 
 	return service
 }
 
-func (m InMemoryInventoryService) RetrieveInventory() []models.InventoryContent {
+func (m InMemoryInventoryService) RetrieveProducts() []models.InventoryContent {
 	return m.storage.Content
 }
 

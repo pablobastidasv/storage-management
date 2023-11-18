@@ -24,7 +24,7 @@ type (
 
 	InventoryContent struct {
 		Product Product
-		Qty     int16
+		Qty     int
 	}
 
 	Product struct {
@@ -41,10 +41,10 @@ type (
 	Remission struct {
 		Id        string
 		Product   Product
-		Qty       int16
+		Qty       int
 		Client    Client
 		State     RemissionState
-		Return    int16
+		Return    int
 		CreatedAt time.Time
 		ClosedAt  time.Time
 	}
