@@ -1,5 +1,5 @@
 {{ define "product_record_form" }}
-    <form hx-post="/api/storages/main/products">
+    <form hx-put="/api/storages/main/products">
         <div>
             <label for="product">Producto</label>
             <select name="product" id="product">
@@ -17,7 +17,6 @@
 
         <div>
             <button type="submit">Ingresar</button>
-            <button type="button">Cancelar</button>
         </div>
     </form>
 {{ end }}

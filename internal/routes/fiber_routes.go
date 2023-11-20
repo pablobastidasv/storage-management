@@ -35,6 +35,7 @@ type (
 		CreatedAt time.Time
 	}
 )
+
 type Routes interface {
 	DefinePages(pagesRoute fiber.Router)
 	DefineRoutes(mainRoute fiber.Router)
@@ -89,7 +90,8 @@ func (r inventoryRoutes) inventoryHomePage(c *fiber.Ctx) error {
 }
 
 func PutProductsHandler(ctx *fiber.Ctx) error {
-	return ctx.SendString("It when Ok")
+	ctx.Response().Header.Add(hxTrigger, "close-right-drawer, load-storage-products")
+	return ctx.SendStatus(204)
 }
 
 func (r inventoryRoutes) getProductsHandler(ctx *fiber.Ctx) error {

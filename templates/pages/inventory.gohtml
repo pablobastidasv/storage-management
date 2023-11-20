@@ -1,5 +1,5 @@
 {{ define "index"}}
-<!DOCTYPE html>
+    <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -30,13 +30,18 @@
                 </button>
             </div>
 
-            {{ block "inventory" .Products }}
-                <ul id="products">
-                    {{ range . }}
-                        <li>{{ .Name }} - {{ .Amount }}</li>
-                    {{end}}
-                </ul>
-            {{ end }}
+            <div id="product-panel"
+                 hx-get="/api/storages/main/products"
+                 hx-trigger="load-storage-products from:body">
+                {{ block "inventory" .Products }}
+                    <ul id="products">
+                        {{ range . }}
+                            {{- /*gotype: co.bastriguez/inventory/internal/routes.ProductItem*/ -}}
+                            <li>{{ .Name }} - {{ .Amount }}</li>
+                        {{end}}
+                    </ul>
+                {{ end }}
+            </div>
         </section>
 
         <section>
