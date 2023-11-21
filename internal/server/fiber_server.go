@@ -1,17 +1,28 @@
 package server
 
 import (
-	"co.bastriguez/inventory/internal/routes"
+	"co.bastriguez/inventory/internal/handlers"
 	"co.bastriguez/inventory/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 )
 
 type (
-	fiberServer struct{}
+	Server struct {
+		listenAddr string
+	}
 )
 
-func (f fiberServer) Start(addr string) error {
+func NewFiberServer(listenAddr string) *Server {
+	return &Server{
+		listenAddr: listenAddr,
+	}
+}
+
+func (s *Server) Start() error {
+	inventoryService := services.NewInMemoryInventoryService()
+	storageHandler := handlers.NewStorageHandler(inventoryService)
+
 	// Initialize standard Go html template engine
 	engine := html.New("./templates", ".gohtml")
 
@@ -21,22 +32,18 @@ func (f fiberServer) Start(addr string) error {
 
 	app.Static("/", "./public")
 
-	storageRoute := app.Group("/api/storages")
-	rootRoute := app.Group("/")
+	app.Get("/", storageHandler.InventoryHomePageHandler)
+	app.Get("/inventory/product/add-form", storageHandler.AddProductFormHandler)
 
-	inventoryService := services.NewInMemoryInventoryService()
-	inventoryRoutes := routes.New(inventoryService)
-	inventoryRoutes.DefineRoutes(storageRoute)
-	inventoryRoutes.DefinePages(rootRoute)
+	storageApi := app.Group("/api/storages")
+	storageApi.Get("/main/products", storageHandler.GetProductsHandler)
+	storageApi.Put("/main/products", storageHandler.PutProductsHandler)
+	storageApi.Get("/main/remissions", storageHandler.StorageRemissionsHandler)
 
 	// Last middleware to match anything
 	app.Use(func(c *fiber.Ctx) error {
 		return c.SendStatus(404) // => 404 "Not Found"
 	})
 
-	return app.Listen(addr)
-}
-
-func NewFiberServer() Server {
-	return &fiberServer{}
+	return app.Listen(s.listenAddr)
 }
