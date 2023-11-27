@@ -50,7 +50,7 @@ func (r *StorageHandler) GetProductsHandler(ctx *fiber.Ctx) error {
 func (r *StorageHandler) generateProductItems() []ProductItem {
 	var productItems []ProductItem
 
-	var products = r.inventoryService.RetrieveProducts()
+	var products = r.inventoryService.RetrieveMainStorageContent()
 	for _, product := range products {
 		item := ProductItem{
 			Id:     product.Product.Id,

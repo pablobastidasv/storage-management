@@ -20,7 +20,7 @@ func NewFiberServer(listenAddr string) *Server {
 }
 
 func (s *Server) Start() error {
-	inventoryService := services.NewInMemoryInventoryService()
+	inventoryService := services.NewInMemoryService()
 	storageHandler := handlers.NewStorageHandler(inventoryService)
 
 	// Initialize standard Go html template engine
