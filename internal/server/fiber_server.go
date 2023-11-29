@@ -9,13 +9,14 @@ import (
 type (
 	Server struct {
 		listenAddr string
-		handlers.StorageHandlers
+		*handlers.StorageHandlers
 	}
 )
 
-func NewFiberServer(listenAddr string) *Server {
+func NewFiberServer(listenAddr string, handler *handlers.StorageHandlers) *Server {
 	return &Server{
-		listenAddr: listenAddr,
+		listenAddr:      listenAddr,
+		StorageHandlers: handler,
 	}
 }
 

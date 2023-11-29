@@ -11,11 +11,9 @@ const (
 	hxTrigger = "HX-Trigger"
 )
 
-type (
-	StorageHandlers struct {
-		storageService services.StorageService
-	}
-)
+type StorageHandlers struct {
+	storageService services.StorageService
+}
 
 func NewStorage(service services.StorageService) *StorageHandlers {
 	return &StorageHandlers{
