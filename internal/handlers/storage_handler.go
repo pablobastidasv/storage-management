@@ -5,7 +5,6 @@ import (
 	"co.bastriguez/inventory/internal/services"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"time"
 )
 
 const (
@@ -13,110 +12,43 @@ const (
 )
 
 type (
-	StorageHandler struct {
-		inventoryService services.InventoryService
-	}
-
-	Product struct {
-		Id           string
-		Name         string
-		Presentation string
-	}
-
-	ProductItem struct {
-		Id     string
-		Name   string
-		Amount string
-	}
-
-	RemissionItem struct {
-		ClientName string
-		ProductItem
-		CreatedAt time.Time
+	StorageHandlers struct {
+		storageService services.StorageService
 	}
 )
 
-func NewStorageHandler(service services.InventoryService) *StorageHandler {
-	return &StorageHandler{
-		inventoryService: service,
+func NewStorage(service services.StorageService) *StorageHandlers {
+	return &StorageHandlers{
+		storageService: service,
 	}
 }
 
-func (r *StorageHandler) GetProductsHandler(ctx *fiber.Ctx) error {
-	productItems := r.generateProductItems()
+func (r *StorageHandlers) GetProductsHandler(ctx *fiber.Ctx) error {
+	var productItems []ProductItem
 	return ctx.Render("inventory", productItems)
 }
 
-func (r *StorageHandler) generateProductItems() []ProductItem {
-	var productItems []ProductItem
-
-	var products = r.inventoryService.RetrieveMainStorageContent()
-	for _, product := range products {
-		item := ProductItem{
-			Id:     product.Product.Id,
-			Name:   product.Product.Name,
-			Amount: defineAmount(&product.Qty, product.Product.Presentation),
-		}
-		productItems = append(productItems, item)
-	}
-	return productItems
-}
-
-func (r *StorageHandler) PutProductsHandler(ctx *fiber.Ctx) error {
-	ctx.Response().Header.Add(hxTrigger, "close-right-drawer, load-storage-products")
+func (r *StorageHandlers) PutProductsHandler(ctx *fiber.Ctx) error {
+	ctx.Response().Header.Add(hxTrigger, "close-right-drawer, load-repository-products")
 	return ctx.SendStatus(204)
 }
 
-func (r *StorageHandler) StorageRemissionsHandler(ctx *fiber.Ctx) error {
-	remissions := r.generateRemissionItems()
+func (r *StorageHandlers) StorageRemissionsHandler(ctx *fiber.Ctx) error {
+	var remissions []RemissionItem
 	return ctx.Render("remissions", remissions)
 }
 
-func (r *StorageHandler) generateRemissionItems() []RemissionItem {
-	remissions := r.inventoryService.RetrieveOpenRemissions()
-	var remissionItems []RemissionItem
-	for _, remission := range remissions {
-		item := RemissionItem{
-			ClientName: remission.Client.Name,
-			ProductItem: ProductItem{
-				Id:     remission.Product.Id,
-				Name:   remission.Product.Name,
-				Amount: defineAmount(&remission.Qty, remission.Product.Presentation),
-			},
-			CreatedAt: remission.CreatedAt,
-		}
-		remissionItems = append(remissionItems, item)
-	}
-	return remissionItems
-}
-
-func (r *StorageHandler) InventoryHomePageHandler(c *fiber.Ctx) error {
+func (r *StorageHandlers) InventoryHomePageHandler(c *fiber.Ctx) error {
 	indexVars := make(map[string]interface{})
-	indexVars["Products"] = r.generateProductItems()
-	indexVars["Remissions"] = r.generateRemissionItems()
+	indexVars["Products"] = []ProductItem{}
+	indexVars["Remissions"] = []RemissionItem{}
 
 	return c.Render("index", indexVars)
 }
 
-func (r *StorageHandler) AddProductFormHandler(c *fiber.Ctx) error {
+func (r *StorageHandlers) AddProductFormHandler(c *fiber.Ctx) error {
 	c.Response().Header.Add(hxTrigger, "open-right-drawer")
-
-	products := []Product{
-		{
-			Id:           "p-a",
-			Name:         "Product A",
-			Presentation: translateUnit(models.KG),
-		}, {
-			Id:           "p-b",
-			Name:         "Product B",
-			Presentation: translateUnit(models.Grms),
-		}, {
-			Id:           "p-c",
-			Name:         "Product C",
-			Presentation: translateUnit(models.Amount),
-		},
-	}
-
+	var products []Product
 	return c.Render("product_record_form", products)
 }
 

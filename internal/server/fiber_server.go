@@ -2,7 +2,6 @@ package server
 
 import (
 	"co.bastriguez/inventory/internal/handlers"
-	"co.bastriguez/inventory/internal/services"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
 )
@@ -10,6 +9,7 @@ import (
 type (
 	Server struct {
 		listenAddr string
+		handlers.StorageHandlers
 	}
 )
 
@@ -20,9 +20,6 @@ func NewFiberServer(listenAddr string) *Server {
 }
 
 func (s *Server) Start() error {
-	inventoryService := services.NewInMemoryService()
-	storageHandler := handlers.NewStorageHandler(inventoryService)
-
 	// Initialize standard Go html template engine
 	engine := html.New("./templates", ".gohtml")
 
@@ -32,13 +29,13 @@ func (s *Server) Start() error {
 
 	app.Static("/", "./public")
 
-	app.Get("/", storageHandler.InventoryHomePageHandler)
-	app.Get("/inventory/product/add-form", storageHandler.AddProductFormHandler)
+	app.Get("/", s.InventoryHomePageHandler)
+	app.Get("/inventory/product/add-form", s.AddProductFormHandler)
 
 	storageApi := app.Group("/api/storages")
-	storageApi.Get("/main/products", storageHandler.GetProductsHandler)
-	storageApi.Put("/main/products", storageHandler.PutProductsHandler)
-	storageApi.Get("/main/remissions", storageHandler.StorageRemissionsHandler)
+	storageApi.Get("/main/products", s.GetProductsHandler)
+	storageApi.Put("/main/products", s.PutProductsHandler)
+	storageApi.Get("/main/remissions", s.StorageRemissionsHandler)
 
 	// Last middleware to match anything
 	app.Use(func(c *fiber.Ctx) error {
