@@ -9,6 +9,7 @@ const (
 	KG Presentation = iota
 	Grms
 	Amount
+	unknown
 )
 
 type (
@@ -35,3 +36,16 @@ type (
 		Qty      int
 	}
 )
+
+func NewPresentation(presentation string) Presentation {
+	switch presentation {
+	case "KG":
+		return KG
+	case "GRAMS":
+		return Grms
+	case "QUANTITY":
+		return Amount
+	default:
+		return unknown
+	}
+}

@@ -2,31 +2,33 @@ package databases
 
 import (
 	"database/sql"
-	"os"
-
-	_ "github.com/mattn/go-sqlite3"
+	"fmt"
+	_ "github.com/lib/pq"
+	"log"
 )
 
 func New() (*sql.DB, error) {
-	return newSqliteDatabase()
+	return newConnection()
 }
 
-func newSqliteDatabase() (*sql.DB, error) {
-	path := "./bastriguez.db"
-	if _, err := os.Stat(path); err != nil {
-		file, err := os.Create(path)
-		if err != nil {
-			return nil, err
-		}
-		err = file.Close()
-		if err != nil {
-			return nil, err
-		}
+func newConnection() (*sql.DB, error) {
+	host := "localhost"
+	port := 5432
+	user := "postgres"
+	password := "secretpassword"
+	dbname := "postgres"
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		log.Fatalf("error opening the connection, %s", err)
 	}
 
-	db, err := sql.Open("sqlite3", path)
+	err = db.Ping()
 	if err != nil {
-		return nil, err
+		log.Fatalf("error when pinging to the database, %s", err)
 	}
 
 	return db, nil

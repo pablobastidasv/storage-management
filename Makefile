@@ -2,8 +2,8 @@ PHONY: run install generate build clean
 
 
 install:
-	cd public && pnpm install
 	go install github.com/cosmtrek/air@latest
+	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
 
 generate:
@@ -24,5 +24,13 @@ clean:
 	rm -rf dist
 
 
-run/dev:
+run/dev: run/db migrate/dev
 	air
+
+
+run/db:
+	docker compose up -d
+
+
+migrate/dev:
+	migrate -path database/migration/ -database "postgresql://postgres:secretpassword@localhost:5432/?sslmode=disable" -verbose up
