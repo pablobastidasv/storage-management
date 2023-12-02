@@ -38,7 +38,13 @@ func (r *StorageHandlers) StorageRemissionsHandler(ctx *fiber.Ctx) error {
 
 func (r *StorageHandlers) InventoryHomePageHandler(c *fiber.Ctx) error {
 	indexVars := make(map[string]interface{})
-	indexVars["Products"] = []ProductItem{}
+	var err error
+
+	indexVars["Products"], err = r.fetchStorageItems()
+	if err != nil {
+		return err
+	}
+
 	indexVars["Remissions"] = []RemissionItem{}
 
 	return c.Render("index", indexVars)
@@ -48,6 +54,24 @@ func (r *StorageHandlers) AddProductFormHandler(c *fiber.Ctx) error {
 	c.Response().Header.Add(hxTrigger, "open-right-drawer")
 	var products []Product
 	return c.Render("product_record_form", products)
+}
+
+func (r *StorageHandlers) fetchStorageItems() ([]ProductItem, error) {
+	storage, err := r.storageService.ItemsByStorage("unused")
+	if err != nil {
+		return nil, err
+	}
+
+	var products []ProductItem
+	for _, i := range storage.Items {
+		products = append(products, ProductItem{
+			Id:     i.ProductId,
+			Name:   i.Name,
+			Amount: defineAmount(&i.Qty, i.Presentation),
+		})
+	}
+	return products, nil
+
 }
 
 func defineAmount(qty *int, presentation models.Presentation) string {
