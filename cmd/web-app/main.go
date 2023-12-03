@@ -18,16 +18,22 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	fiberServer := server.NewFiberServer(addr)
+
+	// Product service
+	productRepo := repository.NewProductsRepository(db)
+	productService := services.NewProductService(productRepo)
+	productHandler := handlers.NewProductHandler(productService)
+
+	fiberServer.ProductHandler(productHandler)
+
 	// Persistence implemented interface
-	storageRepo := repository.New(db)
+	storageRepo := repository.NewStorageRepository(db)
+	storageService := services.NewStorageService(storageRepo)
+	storageHandler := handlers.NewStorageHandler(storageService, productService)
 
-	// Instance of a service
-	storageService := services.NewStorage(storageRepo, "Nothing yet")
+	fiberServer.StorageHandler(storageHandler)
 
-	// handlers instance
-	storageHandler := handlers.NewStorage(storageService)
-
-	// service routes
-	app := server.NewFiberServer(addr, storageHandler)
-	log.Fatal(app.Start())
+	// start service
+	log.Fatal(fiberServer.Start())
 }

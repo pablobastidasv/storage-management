@@ -12,12 +12,14 @@ const (
 )
 
 type StorageHandlers struct {
-	storageService services.StorageService
+	storageService  services.StorageService
+	productsService services.ProductsService
 }
 
-func NewStorage(service services.StorageService) *StorageHandlers {
+func NewStorageHandler(service services.StorageService, productsService services.ProductsService) *StorageHandlers {
 	return &StorageHandlers{
-		storageService: service,
+		storageService:  service,
+		productsService: productsService,
 	}
 }
 
@@ -52,8 +54,29 @@ func (r *StorageHandlers) InventoryHomePageHandler(c *fiber.Ctx) error {
 
 func (r *StorageHandlers) AddProductFormHandler(c *fiber.Ctx) error {
 	c.Response().Header.Add(hxTrigger, "open-right-drawer")
-	var products []Product
+	products, err := r.loadProducts()
+	if err != nil {
+		return err
+	}
 	return c.Render("product_record_form", products)
+}
+
+func (r *StorageHandlers) loadProducts() ([]Product, error) {
+	prods, err := r.productsService.FetchProducts()
+	if err != nil {
+		return nil, err
+	}
+
+	var products []Product
+	for _, p := range prods.Items {
+		products = append(products, Product{
+			Id:           p.Id,
+			Name:         p.Name,
+			Presentation: translateUnit(p.Presentation),
+		})
+	}
+
+	return products, nil
 }
 
 func (r *StorageHandlers) fetchStorageItems() ([]ProductItem, error) {

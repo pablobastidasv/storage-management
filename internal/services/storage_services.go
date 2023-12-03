@@ -26,7 +26,6 @@ type StorageService interface {
 
 type storageService struct {
 	storageRepo repository.StorageRepository
-	productRepo repository.ProductRepository
 }
 
 func (s storageService) ItemsByStorage(_ string) (StorageItems, error) {
@@ -60,9 +59,8 @@ func (s storageService) AddProduct(storageId string, productId string, qty int) 
 	panic("implement me")
 }
 
-func NewStorage(storageRepo repository.StorageRepository, productRepo repository.ProductRepository) StorageService {
+func NewStorageService(storageRepo repository.StorageRepository) StorageService {
 	return &storageService{
 		storageRepo: storageRepo,
-		productRepo: productRepo,
 	}
 }

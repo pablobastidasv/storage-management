@@ -19,7 +19,7 @@ type repository struct {
 func (r *repository) FetchItemsByStorage(_ *models.Storage) ([]models.InventoryItem, error) {
 	rows, err := r.db.Query("select i.quantity, p.id, p.name, p.presentation from items i join public.products p on p.id = i.product_id")
 	if err != nil {
-		return []models.InventoryItem{}, nil
+		return nil, nil
 	}
 	defer rows.Close()
 
@@ -28,7 +28,7 @@ func (r *repository) FetchItemsByStorage(_ *models.Storage) ([]models.InventoryI
 		var item models.InventoryItem
 		var presentation string
 		if err := rows.Scan(&item.Qty, &item.Product.Id, &item.Product.Name, &presentation); err != nil {
-			return []models.InventoryItem{}, nil
+			return nil, nil
 		}
 		item.Product.Presentation = models.NewPresentation(presentation)
 
@@ -53,7 +53,7 @@ func (r *repository) CreateTransaction(transaction models.Transaction) error {
 	panic("implement me")
 }
 
-func New(db *sql.DB) StorageRepository {
+func NewStorageRepository(db *sql.DB) StorageRepository {
 	return &repository{
 		db: db,
 	}
