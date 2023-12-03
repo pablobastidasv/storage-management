@@ -73,7 +73,8 @@ func (r *repository) UpdateItem(storageId string, item *models.InventoryItem) er
 func (r *repository) FetchItemsByStorage(_ *models.Storage) ([]models.InventoryItem, error) {
 	rows, err := r.db.Query(`select i.quantity, p.id, p.name, p.presentation 
 								 from items i 
-								 join public.products p on p.id = i.product_id`)
+								 join public.products p on p.id = i.product_id
+								 order by p.name`)
 	if err != nil {
 		return nil, nil
 	}

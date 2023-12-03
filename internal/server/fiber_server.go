@@ -42,7 +42,7 @@ func (s *Server) StorageHandler(storageHandler *handlers.StorageHandlers) {
 	s.app.Get("/inventory/product/add-form", storageHandler.AddProductFormHandler)
 
 	storageApi := s.app.Group("/api/storages")
-	storageApi.Get("/main/products", storageHandler.GetProductsHandler)
+	storageApi.Get("/main/products", storageHandler.HandleGetProducts)
 	storageApi.Put("/main/products", storageHandler.HandlePutProducts)
 	storageApi.Get("/main/remissions", storageHandler.StorageRemissionsHandler)
 

@@ -23,8 +23,12 @@ func NewStorageHandler(service services.StorageService, productsService services
 	}
 }
 
-func (r *StorageHandlers) GetProductsHandler(ctx *fiber.Ctx) error {
-	var productItems []ProductItem
+func (r *StorageHandlers) HandleGetProducts(ctx *fiber.Ctx) error {
+	productItems, err := r.fetchStorageItems()
+	if err != nil {
+		return err
+	}
+
 	return ctx.Render("inventory", productItems)
 }
 
@@ -41,7 +45,7 @@ func (r *StorageHandlers) HandlePutProducts(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	ctx.Response().Header.Add(hxTrigger, "close-right-drawer, load-repository-products")
+	ctx.Response().Header.Add(hxTrigger, "close-right-drawer, load-storage-products")
 	return ctx.SendStatus(204)
 }
 
@@ -118,7 +122,7 @@ func translateUnit(unit models.Presentation) string {
 	case models.KG:
 		return "Kilogramos"
 	case models.Amount:
-		return "Cantidad"
+		return "Unidades"
 	case models.Grms:
 		return "Gramos"
 	default:

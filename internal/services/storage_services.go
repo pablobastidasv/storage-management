@@ -3,6 +3,7 @@ package services
 import (
 	"co.bastriguez/inventory/internal/models"
 	"co.bastriguez/inventory/internal/repository"
+	"errors"
 	"fmt"
 	"os/exec"
 )
@@ -58,6 +59,10 @@ func (s storageService) RemoveProduct(storageId string, productId string, qty in
 }
 
 func (s storageService) AddProduct(_ string, productId string, qty int) error {
+	if qty <= 0 {
+		return errors.New("quantity MUST be more than zero (0)")
+	}
+
 	// there is only one storage therefore, its id should be retrieved
 	storageId, err := s.fetchMainStorage()
 	if err != nil {
