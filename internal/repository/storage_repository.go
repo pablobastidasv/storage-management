@@ -7,9 +7,6 @@ import (
 )
 
 type StorageRepository interface {
-	AddProduct(storage models.Storage, inventoryItem models.InventoryItem) error
-	DecreaseProduct(storage models.Storage, inventoryItem models.InventoryItem) error
-	CreateTransaction(transaction models.Transaction) error
 	FetchItemsByStorage(storage *models.Storage) ([]models.InventoryItem, error)
 	FindItemBy(storageId string, productId string) (*models.InventoryItem, error)
 	UpdateItem(storageId string, item *models.InventoryItem) error
@@ -93,21 +90,6 @@ func (r *repository) FetchItemsByStorage(_ *models.Storage) ([]models.InventoryI
 	}
 
 	return items, nil
-}
-
-func (r *repository) AddProduct(storage models.Storage, inventoryItem models.InventoryItem) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r *repository) DecreaseProduct(storage models.Storage, inventoryItem models.InventoryItem) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r *repository) CreateTransaction(transaction models.Transaction) error {
-	//TODO implement me
-	panic("implement me")
 }
 
 func NewStorageRepository(db *sql.DB) StorageRepository {

@@ -10,6 +10,11 @@ type productRepo struct {
 	db *sql.DB
 }
 
+type ProductRepository interface {
+	FetchProducts() ([]models.Product, error)
+	ExistProductById(productId string) (bool, error)
+}
+
 func (p *productRepo) ExistProductById(productId string) (bool, error) {
 	var exists sql.NullBool
 	err := p.db.QueryRow("select exists(select 1 from products where id=$1);", productId).Scan(&exists)
@@ -46,11 +51,6 @@ func (p *productRepo) FetchProducts() ([]models.Product, error) {
 	}
 
 	return products, nil
-}
-
-type ProductRepository interface {
-	FetchProducts() ([]models.Product, error)
-	ExistProductById(productId string) (bool, error)
 }
 
 func NewProductsRepository(db *sql.DB) ProductRepository {
