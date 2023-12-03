@@ -3,14 +3,30 @@ package repository
 import (
 	"co.bastriguez/inventory/internal/models"
 	"database/sql"
+	"errors"
 )
 
 type productRepo struct {
 	db *sql.DB
 }
 
-func (p productRepo) FetchProducts() ([]models.Product, error) {
-	rows, err := p.db.Query("select id, name, presentation  from products")
+func (p *productRepo) ExistProductById(productId string) (bool, error) {
+	var exists sql.NullBool
+	err := p.db.QueryRow("select exists(select 1 from products where id=$1);", productId).Scan(&exists)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (p *productRepo) FetchProducts() ([]models.Product, error) {
+	rows, err := p.db.Query("select id, name, presentation from products")
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +50,7 @@ func (p productRepo) FetchProducts() ([]models.Product, error) {
 
 type ProductRepository interface {
 	FetchProducts() ([]models.Product, error)
+	ExistProductById(productId string) (bool, error)
 }
 
 func NewProductsRepository(db *sql.DB) ProductRepository {

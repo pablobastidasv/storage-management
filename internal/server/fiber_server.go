@@ -3,6 +3,7 @@ package server
 import (
 	"co.bastriguez/inventory/internal/handlers"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 )
 
@@ -20,6 +21,7 @@ func NewFiberServer(listenAddr string) *Server {
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
+	app.Use(logger.New())
 
 	app.Static("/", "./public")
 
@@ -41,7 +43,7 @@ func (s *Server) StorageHandler(storageHandler *handlers.StorageHandlers) {
 
 	storageApi := s.app.Group("/api/storages")
 	storageApi.Get("/main/products", storageHandler.GetProductsHandler)
-	storageApi.Put("/main/products", storageHandler.PutProductsHandler)
+	storageApi.Put("/main/products", storageHandler.HandlePutProducts)
 	storageApi.Get("/main/remissions", storageHandler.StorageRemissionsHandler)
 
 }

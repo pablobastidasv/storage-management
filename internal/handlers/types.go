@@ -22,4 +22,9 @@ type (
 		ProductItem
 		CreatedAt time.Time
 	}
+
+	PutProductsRequest struct {
+		Product string `json:"product"`
+		Qty     int    `json:"qty"`
+	}
 )

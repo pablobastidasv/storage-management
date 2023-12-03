@@ -28,7 +28,19 @@ func (r *StorageHandlers) GetProductsHandler(ctx *fiber.Ctx) error {
 	return ctx.Render("inventory", productItems)
 }
 
-func (r *StorageHandlers) PutProductsHandler(ctx *fiber.Ctx) error {
+func (r *StorageHandlers) HandlePutProducts(ctx *fiber.Ctx) error {
+	var request PutProductsRequest
+	var err error
+	err = ctx.BodyParser(&request)
+	if err != nil {
+		return err
+	}
+
+	err = r.storageService.AddProduct("main", request.Product, request.Qty)
+	if err != nil {
+		return err
+	}
+
 	ctx.Response().Header.Add(hxTrigger, "close-right-drawer, load-repository-products")
 	return ctx.SendStatus(204)
 }
