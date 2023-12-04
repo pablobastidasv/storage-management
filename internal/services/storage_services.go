@@ -3,9 +3,7 @@ package services
 import (
 	"co.bastriguez/inventory/internal/models"
 	"co.bastriguez/inventory/internal/repository"
-	"errors"
 	"fmt"
-	"os/exec"
 )
 
 type (
@@ -60,7 +58,10 @@ func (s storageService) RemoveProduct(storageId string, productId string, qty in
 
 func (s storageService) AddProduct(_ string, productId string, qty int) error {
 	if qty <= 0 {
-		return errors.New("quantity MUST be more than zero (0)")
+		return NewWrongParameter("quantity MUST be more than zero (0)")
+	}
+	if len(productId) == 0 {
+		return NewWrongParameter("product MUST be specified")
 	}
 
 	// there is only one storage therefore, its id should be retrieved
@@ -107,9 +108,9 @@ func (s storageService) checkIfProductExist(productId string) error {
 		return err
 	}
 	if !productExist {
-		return &exec.Error{
-			Name: fmt.Sprintf("the product with id %s was not found.", productId),
-		}
+		return NewWrongParameter(
+			fmt.Sprintf("the product with id %s was not found.", productId),
+		)
 	}
 	return nil
 }

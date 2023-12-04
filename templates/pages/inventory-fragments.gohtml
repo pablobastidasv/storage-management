@@ -1,5 +1,6 @@
 {{ define "product_record_form" }}
     <form hx-put="/api/storages/main/products">
+        <div id="error-alert"></div>
         <div>
             <label for="product">Producto</label>
             <select name="product" id="product">

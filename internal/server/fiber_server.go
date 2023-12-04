@@ -2,9 +2,12 @@ package server
 
 import (
 	"co.bastriguez/inventory/internal/handlers"
+	"co.bastriguez/inventory/internal/services"
+	"errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
+	"log"
 )
 
 type (
@@ -19,7 +22,8 @@ func NewFiberServer(listenAddr string) *Server {
 	engine := html.New("./templates", ".gohtml")
 
 	app := fiber.New(fiber.Config{
-		Views: engine,
+		Views:        engine,
+		ErrorHandler: ErrorHandler,
 	})
 	app.Use(logger.New())
 
@@ -55,4 +59,20 @@ func (s *Server) Start() error {
 	})
 
 	return s.app.Listen(s.listenAddr)
+}
+
+func ErrorHandler(ctx *fiber.Ctx, err error) error {
+	var wrongParameter *services.WrongParameter
+	if errors.As(err, &wrongParameter) {
+		ctx.Response().Header.Add("HX-Retarget", "#error-alert")
+		return ctx.Render("alert-messages", &AlertMessage{Message: err.Error()})
+	}
+
+	log.Printf("there was a unexpected error, it message is %s", err.Error())
+	ctx.Status(200).Response().Header.Add("HX-Redirect", "https://http.cat/status/500")
+	return nil
+}
+
+type AlertMessage struct {
+	Message string
 }
