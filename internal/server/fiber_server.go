@@ -35,20 +35,20 @@ func NewFiberServer(listenAddr string) *Server {
 	}
 }
 
-func (s *Server) ProductHandler(productHandler *handlers.ProductHandlers) {
+func (s *Server) HandleProductsEndpoints(productHandler *handlers.ProductHandlers) {
 	productsApi := s.app.Group("/api/products")
 
 	productsApi.Get("/", productHandler.HandleGetProducts)
 }
 
-func (s *Server) StorageHandler(storageHandler *handlers.StorageHandlers) {
-	s.app.Get("/", storageHandler.InventoryHomePageHandler)
-	s.app.Get("/inventory/product/add-form", storageHandler.AddProductFormHandler)
+func (s *Server) HandleStoragesEndpoints(storageHandler *handlers.StorageHandlers) {
+	s.app.Get("/", storageHandler.HandleInventoryHomePage)
+	s.app.Get("/inventory/product/add-form", storageHandler.HandleAddProductFormFragment)
 
 	storageApi := s.app.Group("/api/storages")
 	storageApi.Get("/main/products", storageHandler.HandleGetProducts)
 	storageApi.Put("/main/products", storageHandler.HandlePutProducts)
-	storageApi.Get("/main/remissions", storageHandler.StorageRemissionsHandler)
+	storageApi.Get("/main/remissions", storageHandler.HandleGetRemissions) // TODO: move to remissions
 
 }
 

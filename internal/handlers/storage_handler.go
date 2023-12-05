@@ -49,12 +49,12 @@ func (r *StorageHandlers) HandlePutProducts(ctx *fiber.Ctx) error {
 	return ctx.SendStatus(204)
 }
 
-func (r *StorageHandlers) StorageRemissionsHandler(ctx *fiber.Ctx) error {
+func (r *StorageHandlers) HandleGetRemissions(ctx *fiber.Ctx) error {
 	var remissions []RemissionItem
 	return ctx.Render("remissions", remissions)
 }
 
-func (r *StorageHandlers) InventoryHomePageHandler(c *fiber.Ctx) error {
+func (r *StorageHandlers) HandleInventoryHomePage(c *fiber.Ctx) error {
 	indexVars := make(map[string]interface{})
 	var err error
 
@@ -68,7 +68,7 @@ func (r *StorageHandlers) InventoryHomePageHandler(c *fiber.Ctx) error {
 	return c.Render("index", indexVars)
 }
 
-func (r *StorageHandlers) AddProductFormHandler(c *fiber.Ctx) error {
+func (r *StorageHandlers) HandleAddProductFormFragment(c *fiber.Ctx) error {
 	c.Response().Header.Add(hxTrigger, "open-right-drawer")
 	products, err := r.loadProducts()
 	if err != nil {

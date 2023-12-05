@@ -25,14 +25,14 @@ func main() {
 	productService := services.NewProductService(productRepo)
 	productHandler := handlers.NewProductHandler(productService)
 
-	fiberServer.ProductHandler(productHandler)
+	fiberServer.HandleProductsEndpoints(productHandler)
 
 	// Persistence implemented interface
 	storageRepo := repository.NewStorageRepository(db)
 	storageService := services.NewStorageService(storageRepo, productRepo)
 	storageHandler := handlers.NewStorageHandler(storageService, productService)
 
-	fiberServer.StorageHandler(storageHandler)
+	fiberServer.HandleStoragesEndpoints(storageHandler)
 
 	// start service
 	log.Fatal(fiberServer.Start())
