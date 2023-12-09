@@ -5,20 +5,66 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type StorageRepository interface {
 	FetchItemsByStorage(ctx context.Context, storage *models.Storage) ([]models.InventoryItem, error)
-	FindItemBy(storageId string, productId string) (*models.InventoryItem, error)
-	UpdateItem(storageId string, item *models.InventoryItem) error
-	FindMainStorage() (*models.Storage, error)
+	FindItemByProductId(ctx context.Context, storageId string, productId string) (*models.InventoryItem, error)
+	UpdateItem(ctx context.Context, storageId string, item *models.InventoryItem) error
+	FindMainStorage(ctx context.Context) (*models.Storage, error)
 }
 
-type repository struct {
+// mongo implementation
+const InventoryItemsCollectionName = "inventoryItems"
+
+type mongoRepository struct {
+	collection *mongo.Collection
+}
+
+func (m mongoRepository) FetchItemsByStorage(ctx context.Context, _ *models.Storage) ([]models.InventoryItem, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m mongoRepository) FindItemByProductId(ctx context.Context, _ string, productId string) (*models.InventoryItem, error) {
+	res := m.collection.FindOne(ctx, bson.D{{"product.id", productId}})
+	var repoItem InventoryItem
+	if err := res.Decode(&repoItem); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &models.InventoryItem{
+		Product: models.InventoryProduct{
+			Id:           repoItem.Product.Id,
+			Name:         repoItem.Product.Name,
+			Presentation: repoItem.Product.Presentation,
+		},
+		Qty: repoItem.Qty,
+	}, nil
+}
+
+func (m mongoRepository) UpdateItem(ctx context.Context, _ string, item *models.InventoryItem) error {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m mongoRepository) FindMainStorage(ctx context.Context) (*models.Storage, error) {
+	return &models.Storage{
+		Id: "313fbcf2-daeb-405d-b9e6-94649a33c5f2",
+	}, nil
+}
+
+// sql implementatioon
+type relationalRepository struct {
 	db *sql.DB
 }
 
-func (r *repository) FindMainStorage() (*models.Storage, error) {
+func (r *relationalRepository) FindMainStorage(_ context.Context) (*models.Storage, error) {
 	row := r.db.QueryRow("select s.id from storages s limit 1")
 	var storage models.Storage
 	err := row.Scan(&storage.Id)
@@ -29,7 +75,7 @@ func (r *repository) FindMainStorage() (*models.Storage, error) {
 	return &storage, nil
 }
 
-func (r *repository) FindItemBy(storageId string, productId string) (*models.InventoryItem, error) {
+func (r *relationalRepository) FindItemByProductId(_ context.Context, storageId string, productId string) (*models.InventoryItem, error) {
 	row := r.db.QueryRow(
 		`select i.quantity, p.name, p.presentation from items i 
 			join public.products p on p.id = i.product_id 
@@ -53,7 +99,7 @@ func (r *repository) FindItemBy(storageId string, productId string) (*models.Inv
 	return &item, nil
 }
 
-func (r *repository) UpdateItem(storageId string, item *models.InventoryItem) error {
+func (r *relationalRepository) UpdateItem(_ context.Context, storageId string, item *models.InventoryItem) error {
 	_, err := r.db.Exec(`
 		INSERT INTO items(storage_id, product_id, quantity)
 			VALUES($1, $2, $3) 
@@ -68,7 +114,7 @@ func (r *repository) UpdateItem(storageId string, item *models.InventoryItem) er
 	return nil
 }
 
-func (r *repository) FetchItemsByStorage(_ context.Context, _ *models.Storage) ([]models.InventoryItem, error) {
+func (r *relationalRepository) FetchItemsByStorage(_ context.Context, _ *models.Storage) ([]models.InventoryItem, error) {
 	rows, err := r.db.Query(`select i.quantity, p.id, p.name, p.presentation 
 								 from items i 
 								 join public.products p on p.id = i.product_id
@@ -93,8 +139,15 @@ func (r *repository) FetchItemsByStorage(_ context.Context, _ *models.Storage) (
 	return items, nil
 }
 
-func NewStorageRepository(db *sql.DB) StorageRepository {
-	return &repository{
+func NewStorageMongoRepository(database *mongo.Database) StorageRepository {
+	collection := database.Collection(InventoryItemsCollectionName)
+	return &mongoRepository{
+		collection: collection,
+	}
+}
+
+func NewStorageRelationalRepository(db *sql.DB) StorageRepository {
+	return &relationalRepository{
 		db: db,
 	}
 }

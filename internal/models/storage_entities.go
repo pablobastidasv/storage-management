@@ -19,8 +19,14 @@ type (
 	}
 
 	InventoryItem struct {
-		Product Product
+		Product InventoryProduct
 		Qty     int
+	}
+
+	InventoryProduct struct {
+		Id           string
+		Name         string
+		Presentation Presentation
 	}
 
 	Product struct {

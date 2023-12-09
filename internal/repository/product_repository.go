@@ -25,7 +25,7 @@ func (m mongoProductRepo) FetchProducts(ctx context.Context) ([]models.Product, 
 		return nil, err
 	}
 
-	var mongoProducts []product
+	var mongoProducts []Product
 	if err := res.All(ctx, &mongoProducts); err != nil {
 		return nil, err
 	}
@@ -92,16 +92,14 @@ func (p *productRepo) FetchProducts(ctx context.Context) ([]models.Product, erro
 	return products, nil
 }
 
-// --
 func NewSqlProductsRepository(db *sql.DB) ProductRepository {
 	return &productRepo{
 		db,
 	}
 }
 
-func NewMongoProductsRepository(client *mongo.Client) ProductRepository {
-	// TODO: how to share the database name
-	collection := client.Database("bastriguez").Collection("products")
+func NewMongoProductsRepository(database *mongo.Database) ProductRepository {
+	collection := database.Collection("products")
 	return &mongoProductRepo{
 		collection: collection,
 	}

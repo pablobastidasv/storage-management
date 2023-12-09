@@ -75,7 +75,7 @@ func (s storageService) AddProduct(ctx context.Context, _ string, productId stri
 		return err
 	}
 
-	item, err := s.storageRepo.FindItemBy(storageId, productId)
+	item, err := s.storageRepo.FindItemByProductId(storageId, productId)
 	if err != nil {
 		return err
 	}

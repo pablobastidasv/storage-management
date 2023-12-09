@@ -1,65 +1,81 @@
-package repository
+package repository_test
 
 import (
-	"co.bastriguez/inventory/internal/databases"
 	"co.bastriguez/inventory/internal/models"
+	"co.bastriguez/inventory/internal/repository"
 	"context"
-	"database/sql"
-	"log"
-	"reflect"
+	"fmt"
+	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/mongo"
 	"testing"
+	"time"
 )
 
-// Used to debug database connection, there is not a mocked database therefore this test is not reliable
-func _Test_repository_RetrieveItemByStorage(t *testing.T) {
+func Test_mongoRepository_FindItemByProductId(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, database := connect(ctx)
+	collection := database.Collection(repository.InventoryItemsCollectionName)
+
+	existingProductId := randomProductId(t)
+	expectedItem := models.InventoryItem{
+		Product: models.InventoryProduct{
+			Id:           existingProductId,
+			Name:         "The Pavo",
+			Presentation: models.Amount,
+		},
+		Qty: 42,
+	}
+	createInventoryItem(ctx, t, collection, &expectedItem)
+	nonExistingProductId := randomProductId(t)
+
 	type fields struct {
-		db *sql.DB
+		database *mongo.Database
 	}
 	type args struct {
-		storage *models.Storage
-		ctx     context.Context
+		ctx       context.Context
+		in1       string
+		productId string
 	}
 	tests := []struct {
 		name    string
 		fields  fields
 		args    args
-		want    []models.InventoryItem
-		wantErr bool
+		want    *models.InventoryItem
+		wantErr assert.ErrorAssertionFunc
 	}{
 		{
-			name: "it should work",
-			fields: fields{
-				db: testDatabase(),
-			},
+			name:   "when product has inventory items, then return the item in the inventory of that product",
+			fields: fields{database: database},
 			args: args{
-				storage: nil,
-				ctx:     context.Background(),
+				ctx:       ctx,
+				in1:       "",
+				productId: existingProductId,
 			},
-			want:    []models.InventoryItem{},
-			wantErr: true,
+			want:    &expectedItem,
+			wantErr: assert.NoError,
+		},
+		{
+			name:   "when product does not have items in the inventory, then return nil",
+			fields: fields{database: database},
+			args: args{
+				ctx:       ctx,
+				in1:       "",
+				productId: nonExistingProductId,
+			},
+			want:    nil,
+			wantErr: assert.NoError,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := &repository{
-				db: tt.fields.db,
-			}
-			got, err := r.FetchItemsByStorage(tt.args.ctx, tt.args.storage)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("RetrieveItemByStorage() error = %v, wantErr %v", err, tt.wantErr)
+			sut := repository.NewStorageMongoRepository(tt.fields.database)
+			got, err := sut.FindItemByProductId(tt.args.ctx, tt.args.in1, tt.args.productId)
+			if !tt.wantErr(t, err, fmt.Sprintf("FindItemByProductId(%v, %v, %v)", tt.args.ctx, tt.args.in1, tt.args.productId)) {
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RetrieveItemByStorage() got = %v, want %v", got, tt.want)
-			}
+			assert.Equalf(t, tt.want, got, "FindItemByProductId(%v, %v, %v)", tt.args.ctx, tt.args.in1, tt.args.productId)
 		})
 	}
-}
-
-func testDatabase() *sql.DB {
-	db, err := databases.New()
-	if err != nil {
-		log.Fatalf("there was an error connecting to the database, %s", err.Error())
-	}
-	return db
 }

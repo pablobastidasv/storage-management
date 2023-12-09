@@ -28,7 +28,7 @@ func main() {
 	fiberServer.HandleProductsEndpoints(productHandler)
 
 	// Persistence implemented interface
-	storageRepo := repository.NewStorageRepository(db)
+	storageRepo := repository.NewStorageRelationalRepository(db)
 	storageService := services.NewStorageService(storageRepo, productRepo)
 	storageHandler := handlers.NewStorageHandler(storageService, productService)
 
