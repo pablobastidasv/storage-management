@@ -14,66 +14,6 @@ import (
 	"time"
 )
 
-func _TestMongoDb(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	defer cancel()
-
-	_, database := connect(ctx)
-	collection := database.Collection("testing-mongo")
-
-	// Inserting a value
-	fmt.Println("===== ")
-	fmt.Println("Inserting a value")
-	res, err := collection.InsertOne(ctx, bson.M{"Hello": "world"}) // , "_id": "231c5083-afaa-4365-b31f-8a3b315f2c69"})
-	if err != nil {
-		log.Fatalf("Error with the insert, %s\n", err.Error())
-	}
-	id := res.InsertedID
-	fmt.Printf("The created it is: %s\n", id)
-
-	// Finding a value
-	fmt.Println("===== ")
-	fmt.Println("Finding a value")
-	cur, err := collection.Find(ctx, bson.D{})
-	if err != nil {
-		log.Fatalf("Error when finding, %s\n", err.Error())
-	}
-	defer cur.Close(ctx)
-
-	for cur.Next(ctx) {
-		result := struct {
-			Id    string `bson:"_id"`
-			Hello string `bson:"hello"`
-		}{}
-		if err := cur.Decode(&result); err != nil {
-			log.Fatalf("Error when decoding, %s\n", err.Error())
-		}
-		log.Printf("this is the result value: %s\n", result)
-
-		raw := cur.Current
-		log.Printf("this is the raw value: %s\n", raw)
-	}
-
-	// Find all at once
-	fmt.Println("===== ")
-	fmt.Println("Find all at once")
-	var results []struct {
-		Id    string `bson:"_id"`
-		Hello string `bson:"hello"`
-	}
-	decodeAllCur, err := collection.Find(ctx, bson.D{})
-	if err != nil {
-		log.Fatalf("Error when quering to decoding for all, %s\n", err.Error())
-	}
-	decodeAllCur.Close(ctx)
-
-	if err = decodeAllCur.All(ctx, &results); err != nil {
-		log.Fatalf("Error when decoding for all, %s\n", err.Error())
-	}
-
-	log.Printf("this is the result value when decoding all: %s\n", results)
-}
-
 func TestMongoProductRepo_FetchProducts(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -101,6 +41,75 @@ func TestMongoProductRepo_FetchProducts(t *testing.T) {
 	}
 
 	assert.Equal(t, expected, result)
+}
+
+func Test_mongoProductRepo_ExistProductById(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, database := connect(ctx)
+	collection := database.Collection("products")
+
+	existingProductId := randomProductId(t)
+	createRandomProductWith(ctx, t, collection, existingProductId)
+
+	nonExistingProductId := randomProductId(t)
+
+	type fields struct {
+		collection *mongo.Collection
+	}
+	type args struct {
+		ctx       context.Context
+		productId string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    bool
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name:   "Given a exising product, then return true",
+			fields: fields{collection: collection},
+			args: args{
+				ctx:       ctx,
+				productId: existingProductId,
+			},
+			want:    true,
+			wantErr: assert.NoError,
+		},
+		{
+			name:   "Given a NON exising product, then return false",
+			fields: fields{collection: collection},
+			args: args{
+				ctx:       ctx,
+				productId: nonExistingProductId,
+			},
+			want:    false,
+			wantErr: assert.NoError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := mongoProductRepo{
+				collection: tt.fields.collection,
+			}
+			got, err := m.ExistProductById(tt.args.ctx, tt.args.productId)
+			if !tt.wantErr(t, err, fmt.Sprintf("ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId)) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId)
+		})
+	}
+}
+
+func randomProductId(t *testing.T) string {
+	existingProductId, err := uuid.NewUUID()
+	if err != nil {
+		t.Fatalf("error generating the uuid %s\n", err.Error())
+	}
+	return existingProductId.String()
 }
 
 // ==== Utility functions
@@ -148,79 +157,14 @@ func connect(ctx context.Context) (*mongo.Client, *mongo.Database) {
 	return client, db
 }
 
-func createRandomProductWith(ctx context.Context, collection *mongo.Collection, productId string) error {
+func createRandomProductWith(ctx context.Context, t *testing.T, collection *mongo.Collection, productId string) {
 	_, err := collection.InsertOne(ctx, product{
 		Id:           productId,
 		Name:         "A name",
 		Presentation: models.Grms,
 	})
-	return err
-}
 
-func Test_mongoProductRepo_ExistProductById(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	_, database := connect(ctx)
-	collection := database.Collection("products")
-
-	existingProductId, err := uuid.NewUUID()
 	if err != nil {
-		t.Fatalf("error generating the uuid %s\n", err.Error())
-	}
-	nonExistingProductId, err := uuid.NewUUID()
-	if err != nil {
-		t.Fatalf("error generating the uuid %s\n", err.Error())
-	}
-	if err := createRandomProductWith(ctx, collection, existingProductId.String()); err != nil {
 		t.Fatalf("error creating a random product %s\n", err.Error())
-	}
-
-	type fields struct {
-		collection *mongo.Collection
-	}
-	type args struct {
-		ctx       context.Context
-		productId string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    bool
-		wantErr assert.ErrorAssertionFunc
-	}{
-		{
-			name:   "Given a exising product, then return true",
-			fields: fields{collection: collection},
-			args: args{
-				ctx:       ctx,
-				productId: existingProductId.String(),
-			},
-			want:    true,
-			wantErr: assert.NoError,
-		},
-		{
-			name:   "Given a NON exising product, then return false",
-			fields: fields{collection: collection},
-			args: args{
-				ctx:       ctx,
-				productId: nonExistingProductId.String(),
-			},
-			want:    false,
-			wantErr: assert.NoError,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := mongoProductRepo{
-				collection: tt.fields.collection,
-			}
-			got, err := m.ExistProductById(tt.args.ctx, tt.args.productId)
-			if !tt.wantErr(t, err, fmt.Sprintf("ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId)) {
-				return
-			}
-			assert.Equalf(t, tt.want, got, "ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId)
-		})
 	}
 }
