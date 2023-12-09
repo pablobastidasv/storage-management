@@ -3,6 +3,7 @@ package repository
 import (
 	"co.bastriguez/inventory/internal/databases"
 	"co.bastriguez/inventory/internal/models"
+	"context"
 	"database/sql"
 	"log"
 	"reflect"
@@ -16,6 +17,7 @@ func _Test_repository_RetrieveItemByStorage(t *testing.T) {
 	}
 	type args struct {
 		storage *models.Storage
+		ctx     context.Context
 	}
 	tests := []struct {
 		name    string
@@ -31,6 +33,7 @@ func _Test_repository_RetrieveItemByStorage(t *testing.T) {
 			},
 			args: args{
 				storage: nil,
+				ctx:     context.Background(),
 			},
 			want:    []models.InventoryItem{},
 			wantErr: true,
@@ -41,7 +44,7 @@ func _Test_repository_RetrieveItemByStorage(t *testing.T) {
 			r := &repository{
 				db: tt.fields.db,
 			}
-			got, err := r.FetchItemsByStorage(tt.args.storage)
+			got, err := r.FetchItemsByStorage(tt.args.ctx, tt.args.storage)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("RetrieveItemByStorage() error = %v, wantErr %v", err, tt.wantErr)
 				return

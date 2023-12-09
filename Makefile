@@ -1,4 +1,4 @@
-PHONY: run install generate build clean
+PHONY: run install generate build clean build/prod
 
 
 install:
@@ -12,6 +12,16 @@ generate:
 
 run: generate
 	go run cmd/web-app/main.go
+
+
+build/prod:
+	CGO_ENABLED=0 GOOS=linux go build -o dist/web-app cmd/web-app/main.go
+	cp -r templates dist/.
+	cp -r public/ dist/public
+
+
+migrate/prod:
+	migrate -path database/migration/ -database $(DATABASE_URL) -verbose up
 
 
 build: clean

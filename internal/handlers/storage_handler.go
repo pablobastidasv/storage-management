@@ -3,6 +3,7 @@ package handlers
 import (
 	"co.bastriguez/inventory/internal/models"
 	"co.bastriguez/inventory/internal/services"
+	"context"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,7 +25,7 @@ func NewStorageHandler(service services.StorageService, productsService services
 }
 
 func (r *StorageHandlers) HandleGetProducts(ctx *fiber.Ctx) error {
-	productItems, err := r.fetchStorageItems()
+	productItems, err := r.fetchStorageItems(ctx.Context())
 	if err != nil {
 		return err
 	}
@@ -40,7 +41,7 @@ func (r *StorageHandlers) HandlePutProducts(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	err = r.storageService.AddProduct("main", request.Product, request.Qty)
+	err = r.storageService.AddProduct(ctx.Context(), "main", request.Product, request.Qty)
 	if err != nil {
 		return err
 	}
@@ -58,7 +59,7 @@ func (r *StorageHandlers) HandleInventoryHomePage(c *fiber.Ctx) error {
 	indexVars := make(map[string]interface{})
 	var err error
 
-	indexVars["Products"], err = r.fetchStorageItems()
+	indexVars["Products"], err = r.fetchStorageItems(c.Context())
 	if err != nil {
 		return err
 	}
@@ -70,15 +71,15 @@ func (r *StorageHandlers) HandleInventoryHomePage(c *fiber.Ctx) error {
 
 func (r *StorageHandlers) HandleAddProductFormFragment(c *fiber.Ctx) error {
 	c.Response().Header.Add(hxTrigger, "open-right-drawer")
-	products, err := r.loadProducts()
+	products, err := r.loadProducts(c.Context())
 	if err != nil {
 		return err
 	}
 	return c.Render("product_record_form", products)
 }
 
-func (r *StorageHandlers) loadProducts() ([]Product, error) {
-	prods, err := r.productsService.FetchProducts()
+func (r *StorageHandlers) loadProducts(ctx context.Context) ([]Product, error) {
+	prods, err := r.productsService.FetchProducts(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -95,8 +96,8 @@ func (r *StorageHandlers) loadProducts() ([]Product, error) {
 	return products, nil
 }
 
-func (r *StorageHandlers) fetchStorageItems() ([]ProductItem, error) {
-	storage, err := r.storageService.ItemsByStorage("unused")
+func (r *StorageHandlers) fetchStorageItems(ctx context.Context) ([]ProductItem, error) {
+	storage, err := r.storageService.ItemsByStorage(ctx, "unused")
 	if err != nil {
 		return nil, err
 	}

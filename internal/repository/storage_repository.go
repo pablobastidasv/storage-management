@@ -2,12 +2,13 @@ package repository
 
 import (
 	"co.bastriguez/inventory/internal/models"
+	"context"
 	"database/sql"
 	"errors"
 )
 
 type StorageRepository interface {
-	FetchItemsByStorage(storage *models.Storage) ([]models.InventoryItem, error)
+	FetchItemsByStorage(ctx context.Context, storage *models.Storage) ([]models.InventoryItem, error)
 	FindItemBy(storageId string, productId string) (*models.InventoryItem, error)
 	UpdateItem(storageId string, item *models.InventoryItem) error
 	FindMainStorage() (*models.Storage, error)
@@ -67,7 +68,7 @@ func (r *repository) UpdateItem(storageId string, item *models.InventoryItem) er
 	return nil
 }
 
-func (r *repository) FetchItemsByStorage(_ *models.Storage) ([]models.InventoryItem, error) {
+func (r *repository) FetchItemsByStorage(_ context.Context, _ *models.Storage) ([]models.InventoryItem, error) {
 	rows, err := r.db.Query(`select i.quantity, p.id, p.name, p.presentation 
 								 from items i 
 								 join public.products p on p.id = i.product_id

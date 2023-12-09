@@ -21,7 +21,7 @@ func main() {
 	fiberServer := server.NewFiberServer(addr)
 
 	// Product service
-	productRepo := repository.NewProductsRepository(db)
+	productRepo := repository.NewSqlProductsRepository(db)
 	productService := services.NewProductService(productRepo)
 	productHandler := handlers.NewProductHandler(productService)
 

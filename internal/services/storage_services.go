@@ -3,6 +3,7 @@ package services
 import (
 	"co.bastriguez/inventory/internal/models"
 	"co.bastriguez/inventory/internal/repository"
+	"context"
 	"fmt"
 )
 
@@ -20,9 +21,9 @@ type (
 )
 
 type StorageService interface {
-	AddProduct(storageId string, productId string, qty int) error
+	AddProduct(ctx context.Context, storageId string, productId string, qty int) error
 	RemoveProduct(storageId string, productId string, qty int) error
-	ItemsByStorage(storageId string) (StorageItems, error)
+	ItemsByStorage(ctx context.Context, storageId string) (StorageItems, error)
 }
 
 type storageService struct {
@@ -30,8 +31,8 @@ type storageService struct {
 	productRepo repository.ProductRepository
 }
 
-func (s storageService) ItemsByStorage(_ string) (StorageItems, error) {
-	fetchedItems, err := s.storageRepo.FetchItemsByStorage(nil)
+func (s storageService) ItemsByStorage(ctx context.Context, _ string) (StorageItems, error) {
+	fetchedItems, err := s.storageRepo.FetchItemsByStorage(ctx, nil)
 	if err != nil {
 		return StorageItems{}, err
 	}
@@ -56,7 +57,7 @@ func (s storageService) RemoveProduct(storageId string, productId string, qty in
 	panic("implement me")
 }
 
-func (s storageService) AddProduct(_ string, productId string, qty int) error {
+func (s storageService) AddProduct(ctx context.Context, _ string, productId string, qty int) error {
 	if qty <= 0 {
 		return NewWrongParameter("quantity MUST be more than zero (0)")
 	}
@@ -70,7 +71,7 @@ func (s storageService) AddProduct(_ string, productId string, qty int) error {
 		return err
 	}
 
-	if err := s.checkIfProductExist(productId); err != nil {
+	if err := s.checkIfProductExist(ctx, productId); err != nil {
 		return err
 	}
 
@@ -102,8 +103,8 @@ func (s storageService) fetchMainStorage() (string, error) {
 	return storage.Id, nil
 }
 
-func (s storageService) checkIfProductExist(productId string) error {
-	productExist, err := s.productRepo.ExistProductById(productId)
+func (s storageService) checkIfProductExist(ctx context.Context, productId string) error {
+	productExist, err := s.productRepo.ExistProductById(ctx, productId)
 	if err != nil {
 		return err
 	}

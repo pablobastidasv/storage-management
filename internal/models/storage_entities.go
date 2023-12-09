@@ -2,14 +2,14 @@ package models
 
 import "time"
 
-type Presentation int8
+type Presentation string
 type RemissionState int8
 
 const (
-	KG Presentation = iota
-	Grms
-	Amount
-	unknown
+	KG      Presentation = "KG"
+	Grms                 = "GRAMS"
+	Amount               = "QTY"
+	unknown              = "UNKNOWN"
 )
 
 type (

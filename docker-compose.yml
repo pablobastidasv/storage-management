@@ -2,9 +2,17 @@ version: "3.9"
 
 services:
   db:
-    image: postgres
+    image: mongo
     environment:
-      POSTGRES_PASSWORD: secretpassword
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secretpassword
     ports:
-      - "5432:5432"
-    command: ["postgres", "-c", "log_statement=all"]
+      - "27017:27017"
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://root:secretpassword@db:27017
