@@ -59,8 +59,18 @@ func (m mongoRepository) FindItemByProductId(ctx context.Context, _ string, prod
 }
 
 func (m mongoRepository) UpdateItem(ctx context.Context, _ string, item *models.InventoryItem) error {
-	//TODO implement me
-	panic("implement me")
+	filter := bson.D{{"product.id", item.Product.Id}}
+
+	prod := InventoryProduct{
+		Id:           item.Product.Id,
+		Name:         item.Product.Name,
+		Presentation: item.Product.Presentation,
+	}
+	update := bson.D{{"$set", bson.D{{"qty", item.Qty}, {"product", prod}}}}
+
+	_, err := m.collection.UpdateOne(ctx, filter, update)
+
+	return err
 }
 
 func (m mongoRepository) FindMainStorage(_ context.Context) (*models.Storage, error) {
