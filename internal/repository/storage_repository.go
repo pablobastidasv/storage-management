@@ -16,7 +16,8 @@ type StorageRepository interface {
 	FindMainStorage(ctx context.Context) (*models.Storage, error)
 }
 
-// mongo implementation
+// === mongo implementation
+
 const InventoryItemsCollectionName = "inventoryItems"
 
 type mongoRepository struct {
@@ -24,8 +25,17 @@ type mongoRepository struct {
 }
 
 func (m mongoRepository) FetchItemsByStorage(ctx context.Context, _ *models.Storage) ([]models.InventoryItem, error) {
-	//TODO implement me
-	panic("implement me")
+	found, err := m.collection.Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+
+	var items []models.InventoryItem
+	if err := found.All(ctx, &items); err != nil {
+		return nil, err
+	}
+
+	return items, nil
 }
 
 func (m mongoRepository) FindItemByProductId(ctx context.Context, _ string, productId string) (*models.InventoryItem, error) {
@@ -53,7 +63,7 @@ func (m mongoRepository) UpdateItem(ctx context.Context, _ string, item *models.
 	panic("implement me")
 }
 
-func (m mongoRepository) FindMainStorage(ctx context.Context) (*models.Storage, error) {
+func (m mongoRepository) FindMainStorage(_ context.Context) (*models.Storage, error) {
 	return &models.Storage{
 		Id: "313fbcf2-daeb-405d-b9e6-94649a33c5f2",
 	}, nil

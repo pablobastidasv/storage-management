@@ -4,6 +4,7 @@ import (
 	"co.bastriguez/inventory/internal/models"
 	"co.bastriguez/inventory/internal/repository"
 	"context"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -11,7 +12,7 @@ import (
 	"testing"
 )
 
-func createSomeProducts(ctx context.Context, collection *mongo.Collection, products []repository.Product) {
+func persistProducts(ctx context.Context, collection *mongo.Collection, products []repository.Product) {
 	_, err := collection.DeleteMany(ctx, bson.D{})
 	if err != nil {
 		log.Fatalf("error cleaning the collection: %s\n", err.Error())
@@ -88,5 +89,65 @@ func createInventoryItem(ctx context.Context, t *testing.T, collection *mongo.Co
 	_, err := collection.InsertOne(ctx, item)
 	if err != nil {
 		t.Fatalf("error inserting a just created inventory item %s\n", err.Error())
+	}
+}
+
+func randomProductId(t *testing.T) string {
+	existingProductId, err := uuid.NewUUID()
+	if err != nil {
+		t.Fatalf("error generating the uuid %s\n", err.Error())
+	}
+	return existingProductId.String()
+}
+
+func cleanCollection(ctx context.Context, t *testing.T, collection *mongo.Collection) {
+	_, err := collection.DeleteMany(ctx, bson.D{})
+	if err != nil {
+		t.Fatalf("error cleaning the collection: %s\n", err.Error())
+	}
+}
+
+func createRandomInventoryItemsWith(ctx context.Context, t *testing.T, collection *mongo.Collection, items []models.InventoryItem) {
+	var inventoryItems []repository.InventoryItem
+	for _, item := range items {
+		inventoryItems = append(inventoryItems, repository.InventoryItem{
+			Product: repository.InventoryProduct{
+				Id:           item.Product.Id,
+				Name:         item.Product.Name,
+				Presentation: item.Product.Presentation,
+			},
+			Qty: item.Qty,
+		})
+	}
+
+	var itemsToInsert []interface{}
+	for _, s := range inventoryItems {
+		itemsToInsert = append(itemsToInsert, s)
+	}
+
+	_, err := collection.InsertMany(ctx, itemsToInsert)
+	if err != nil {
+		t.Fatalf("error persisting a set of inventory items %s\n", err.Error())
+	}
+}
+
+func randomInventoryItems(t *testing.T) []models.InventoryItem {
+	return []models.InventoryItem{
+		{
+			Product: models.InventoryProduct{
+				Id:           randomProductId(t),
+				Name:         "a product",
+				Presentation: models.Grms,
+			},
+			Qty: 42,
+		},
+		{
+			Product: models.InventoryProduct{
+				Id:           randomProductId(t),
+				Name:         "anothis product",
+				Presentation: models.KG,
+			},
+			Qty: 24,
+		},
 	}
 }

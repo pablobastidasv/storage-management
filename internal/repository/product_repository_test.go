@@ -5,7 +5,6 @@ import (
 	"co.bastriguez/inventory/internal/repository"
 	"context"
 	"fmt"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/mongo"
 	"testing"
@@ -20,7 +19,7 @@ func TestMongoProductRepo_FetchProducts(t *testing.T) {
 	collection := database.Collection("products")
 
 	givenProducts := randomProducts()
-	createSomeProducts(ctx, collection, givenProducts)
+	persistProducts(ctx, collection, givenProducts)
 
 	var expected []models.Product
 	for _, prod := range givenProducts {
@@ -98,12 +97,4 @@ func Test_mongoProductRepo_ExistProductById(t *testing.T) {
 			assert.Equalf(t, tt.want, got, "ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId)
 		})
 	}
-}
-
-func randomProductId(t *testing.T) string {
-	existingProductId, err := uuid.NewUUID()
-	if err != nil {
-		t.Fatalf("error generating the uuid %s\n", err.Error())
-	}
-	return existingProductId.String()
 }

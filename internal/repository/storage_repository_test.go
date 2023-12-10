@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func Test_mongoRepository_FindItemByProductId(t *testing.T) {
+func TestMongoRepository_FindItemByProductId(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -78,4 +78,25 @@ func Test_mongoRepository_FindItemByProductId(t *testing.T) {
 			assert.Equalf(t, tt.want, got, "FindItemByProductId(%v, %v, %v)", tt.args.ctx, tt.args.in1, tt.args.productId)
 		})
 	}
+}
+
+func TestMongoRepository_FetchItemsByStorage(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	_, database := connect(ctx)
+	collection := database.Collection(repository.InventoryItemsCollectionName)
+
+	expectedItems := randomInventoryItems(t)
+	cleanCollection(ctx, t, collection)
+	createRandomInventoryItemsWith(ctx, t, collection, expectedItems)
+
+	sut := repository.NewStorageMongoRepository(database)
+
+	result, err := sut.FetchItemsByStorage(ctx, nil)
+	if err != nil {
+		t.Fatalf("error fetching the items %s\n", err.Error())
+	}
+
+	assert.Equal(t, expectedItems, result)
 }
