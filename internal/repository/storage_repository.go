@@ -7,12 +7,13 @@ import (
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type StorageRepository interface {
 	FetchItemsByStorage(ctx context.Context, storage *models.Storage) ([]models.InventoryItem, error)
 	FindItemByProductId(ctx context.Context, storageId string, productId string) (*models.InventoryItem, error)
-	UpdateItem(ctx context.Context, storageId string, item *models.InventoryItem) error
+	UpsertItem(ctx context.Context, storageId string, item *models.InventoryItem) error
 	FindMainStorage(ctx context.Context) (*models.Storage, error)
 }
 
@@ -58,7 +59,8 @@ func (m mongoRepository) FindItemByProductId(ctx context.Context, _ string, prod
 	}, nil
 }
 
-func (m mongoRepository) UpdateItem(ctx context.Context, _ string, item *models.InventoryItem) error {
+// UpsertItem TODO: if item does not, exist create a new one
+func (m mongoRepository) UpsertItem(ctx context.Context, _ string, item *models.InventoryItem) error {
 	filter := bson.D{{"product.id", item.Product.Id}}
 
 	prod := InventoryProduct{
@@ -67,8 +69,9 @@ func (m mongoRepository) UpdateItem(ctx context.Context, _ string, item *models.
 		Presentation: item.Product.Presentation,
 	}
 	update := bson.D{{"$set", bson.D{{"qty", item.Qty}, {"product", prod}}}}
+	opts := options.Update().SetUpsert(true)
 
-	_, err := m.collection.UpdateOne(ctx, filter, update)
+	_, err := m.collection.UpdateOne(ctx, filter, update, opts)
 
 	return err
 }
@@ -119,7 +122,7 @@ func (r *relationalRepository) FindItemByProductId(_ context.Context, storageId 
 	return &item, nil
 }
 
-func (r *relationalRepository) UpdateItem(_ context.Context, storageId string, item *models.InventoryItem) error {
+func (r *relationalRepository) UpsertItem(_ context.Context, storageId string, item *models.InventoryItem) error {
 	_, err := r.db.Exec(`
 		INSERT INTO items(storage_id, product_id, quantity)
 			VALUES($1, $2, $3) 

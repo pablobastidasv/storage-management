@@ -13,7 +13,7 @@ func main() {
 	addr := ":8080"
 
 	// database access
-	db, err := databases.New()
+	db, err := databases.NewMongo()
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -21,14 +21,14 @@ func main() {
 	fiberServer := server.NewFiberServer(addr)
 
 	// Product service
-	productRepo := repository.NewSqlProductsRepository(db)
+	productRepo := repository.NewMongoProductsRepository(db)
 	productService := services.NewProductService(productRepo)
 	productHandler := handlers.NewProductHandler(productService)
 
 	fiberServer.HandleProductsEndpoints(productHandler)
 
 	// Persistence implemented interface
-	storageRepo := repository.NewStorageRelationalRepository(db)
+	storageRepo := repository.NewStorageMongoRepository(db)
 	storageService := services.NewStorageService(storageRepo, productRepo)
 	storageHandler := handlers.NewStorageHandler(storageService, productService)
 

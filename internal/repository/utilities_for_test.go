@@ -56,17 +56,19 @@ func connect(ctx context.Context) (*mongo.Client, *mongo.Database) {
 	return client, db
 }
 
-func createRandomProductWith(ctx context.Context, t *testing.T, collection *mongo.Collection, productId string) {
-	prod := repository.Product{
+func createRandomProductWith(ctx context.Context, t *testing.T, collection *mongo.Collection, productId string) *repository.Product {
+	prod := &repository.Product{
 		Id:           productId,
 		Name:         "A name",
 		Presentation: models.Grms,
 	}
 
-	createProduct(ctx, t, collection, &prod)
+	persistProduct(ctx, t, collection, prod)
+
+	return prod
 }
 
-func createProduct(ctx context.Context, t *testing.T, collection *mongo.Collection, prod *repository.Product) {
+func persistProduct(ctx context.Context, t *testing.T, collection *mongo.Collection, prod *repository.Product) {
 	_, err := collection.InsertOne(ctx, prod)
 
 	if err != nil {
@@ -144,7 +146,7 @@ func randomInventoryItems(t *testing.T) []models.InventoryItem {
 		{
 			Product: models.InventoryProduct{
 				Id:           randomProductId(t),
-				Name:         "anothis product",
+				Name:         "another product",
 				Presentation: models.KG,
 			},
 			Qty: 24,

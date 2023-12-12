@@ -16,7 +16,7 @@ func TestMongoProductRepo_FetchProducts(t *testing.T) {
 	defer cancel()
 
 	_, database := connect(ctx)
-	collection := database.Collection("products")
+	collection := database.Collection(repository.ProductsCollectionName)
 
 	givenProducts := randomProducts()
 	persistProducts(ctx, collection, givenProducts)
@@ -45,10 +45,10 @@ func Test_mongoProductRepo_ExistProductById(t *testing.T) {
 	defer cancel()
 
 	_, database := connect(ctx)
-	collection := database.Collection("products")
+	collection := database.Collection(repository.ProductsCollectionName)
 
 	existingProductId := randomProductId(t)
-	createRandomProductWith(ctx, t, collection, existingProductId)
+	_ = createRandomProductWith(ctx, t, collection, existingProductId)
 
 	nonExistingProductId := randomProductId(t)
 
@@ -95,6 +95,70 @@ func Test_mongoProductRepo_ExistProductById(t *testing.T) {
 				return
 			}
 			assert.Equalf(t, tt.want, got, "ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId)
+		})
+	}
+}
+
+func Test_mongoProductRepo_FindProduct(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	_, database := connect(ctx)
+	collection := database.Collection(repository.ProductsCollectionName)
+
+	existingProductId := randomProductId(t)
+	persistedProduct := createRandomProductWith(ctx, t, collection, existingProductId)
+	expectedProduct := models.Product{
+		Id:           persistedProduct.Id,
+		Name:         persistedProduct.Name,
+		Presentation: persistedProduct.Presentation,
+	}
+
+	nonExistingProductId := randomProductId(t)
+
+	type fields struct {
+		collection *mongo.Collection
+	}
+	type args struct {
+		ctx context.Context
+		id  string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    *models.Product
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name:   "when product exists, return the product",
+			fields: fields{collection: collection},
+			args: args{
+				ctx: ctx,
+				id:  existingProductId,
+			},
+			want:    &expectedProduct,
+			wantErr: assert.NoError,
+		},
+		{
+			name:   "when product does not exists, return a nil value",
+			fields: fields{collection: collection},
+			args: args{
+				ctx: ctx,
+				id:  nonExistingProductId,
+			},
+			want:    nil,
+			wantErr: assert.NoError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sut := repository.NewMongoProductsRepository(database)
+			got, err := sut.FindProduct(tt.args.ctx, tt.args.id)
+			if !tt.wantErr(t, err, fmt.Sprintf("FindProduct(%v, %v)", tt.args.ctx, tt.args.id)) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "FindProduct(%v, %v)", tt.args.ctx, tt.args.id)
 		})
 	}
 }

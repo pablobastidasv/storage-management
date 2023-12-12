@@ -115,7 +115,7 @@ func TestMongoRepository_UpdateItem(t *testing.T) {
 	item.Qty = 52
 
 	sut := repository.NewStorageMongoRepository(database)
-	err := sut.UpdateItem(ctx, "", item)
+	err := sut.UpsertItem(ctx, "", item)
 	if err != nil {
 		t.Fatalf("error updating the item %s\n", err.Error())
 	}

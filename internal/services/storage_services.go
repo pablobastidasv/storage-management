@@ -22,7 +22,6 @@ type (
 
 type StorageService interface {
 	AddProduct(ctx context.Context, storageId string, productId string, qty int) error
-	RemoveProduct(storageId string, productId string, qty int) error
 	ItemsByStorage(ctx context.Context, storageId string) (StorageItems, error)
 }
 
@@ -52,11 +51,6 @@ func (s storageService) ItemsByStorage(ctx context.Context, _ string) (StorageIt
 	}, nil
 }
 
-func (s storageService) RemoveProduct(storageId string, productId string, qty int) error {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (s storageService) AddProduct(ctx context.Context, _ string, productId string, qty int) error {
 	if qty <= 0 {
 		return NewWrongParameter("quantity MUST be more than zero (0)")
@@ -66,36 +60,35 @@ func (s storageService) AddProduct(ctx context.Context, _ string, productId stri
 	}
 
 	// there is only one storage therefore, its id should be retrieved
-	storageId, err := s.fetchMainStorage()
+	storageId, err := s.fetchMainStorage(ctx)
 	if err != nil {
 		return err
 	}
 
-	if err := s.checkIfProductExist(ctx, productId); err != nil {
-		return err
-	}
-
-	item, err := s.storageRepo.FindItemByProductId(storageId, productId)
+	item, err := s.storageRepo.FindItemByProductId(ctx, storageId, productId)
 	if err != nil {
 		return err
 	}
 
 	if item == nil {
+		product, err := s.fetchProductById(ctx, productId)
+		if err != nil {
+			return err
+		}
+
 		item = &models.InventoryItem{
-			Product: models.Product{
-				Id: productId,
-			},
-			Qty: 0,
+			Product: *product,
+			Qty:     0,
 		}
 	}
 
 	item.Qty += qty
 
-	return s.storageRepo.UpdateItem(storageId, item)
+	return s.storageRepo.UpsertItem(ctx, storageId, item)
 }
 
-func (s storageService) fetchMainStorage() (string, error) {
-	storage, err := s.storageRepo.FindMainStorage()
+func (s storageService) fetchMainStorage(ctx context.Context) (string, error) {
+	storage, err := s.storageRepo.FindMainStorage(ctx)
 	if err != nil {
 		return "", err
 	}
@@ -114,6 +107,21 @@ func (s storageService) checkIfProductExist(ctx context.Context, productId strin
 		)
 	}
 	return nil
+}
+
+func (s storageService) fetchProductById(ctx context.Context, productId string) (*models.InventoryProduct, error) {
+	product, err := s.productRepo.FindProduct(ctx, productId)
+	if err != nil {
+		return nil, err
+	}
+
+	inventoryProduct := &models.InventoryProduct{
+		Id:           product.Id,
+		Name:         product.Name,
+		Presentation: product.Presentation,
+	}
+
+	return inventoryProduct, err
 }
 
 func NewStorageService(

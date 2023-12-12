@@ -34,7 +34,8 @@ clean:
 	rm -rf dist
 
 
-run/dev: run/db migrate/dev
+#run/dev: run/db migrate/dev
+run/dev: run/db
 	air
 
 

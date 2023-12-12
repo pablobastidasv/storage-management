@@ -9,14 +9,39 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+const ProductsCollectionName = "products"
+
 type ProductRepository interface {
 	FetchProducts(ctx context.Context) ([]models.Product, error)
 	ExistProductById(ctx context.Context, productId string) (bool, error)
+	FindProduct(ctx context.Context, id string) (*models.Product, error)
 }
 
 // ------
 type mongoProductRepo struct {
 	collection *mongo.Collection
+}
+
+func (m mongoProductRepo) FindProduct(ctx context.Context, id string) (*models.Product, error) {
+	var prod Product
+	err := m.collection.FindOne(ctx, bson.D{{"_id", id}}).Decode(&prod)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	product := toProdModel(&prod)
+	return product, nil
+}
+
+func toProdModel(p *Product) *models.Product {
+	return &models.Product{
+		Id:           p.Id,
+		Name:         p.Name,
+		Presentation: p.Presentation,
+	}
 }
 
 func (m mongoProductRepo) FetchProducts(ctx context.Context) ([]models.Product, error) {
@@ -50,11 +75,21 @@ func (m mongoProductRepo) ExistProductById(ctx context.Context, productId string
 }
 
 // ------
-type productRepo struct {
+type sqlRepo struct {
 	db *sql.DB
 }
 
-func (p *productRepo) ExistProductById(ctx context.Context, productId string) (bool, error) {
+func (p *sqlRepo) FindProduct(ctx context.Context, id string) (*models.Product, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p *sqlRepo) FetchProduct(ctx context.Context, id string) (models.Product, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p *sqlRepo) ExistProductById(ctx context.Context, productId string) (bool, error) {
 	var exists sql.NullBool
 	err := p.db.QueryRow("select exists(select 1 from products where id=$1);", productId).Scan(&exists)
 
@@ -69,7 +104,7 @@ func (p *productRepo) ExistProductById(ctx context.Context, productId string) (b
 	return true, nil
 }
 
-func (p *productRepo) FetchProducts(ctx context.Context) ([]models.Product, error) {
+func (p *sqlRepo) FetchProducts(ctx context.Context) ([]models.Product, error) {
 	rows, err := p.db.Query("select id, name, presentation from products")
 	if err != nil {
 		return nil, err
@@ -93,7 +128,7 @@ func (p *productRepo) FetchProducts(ctx context.Context) ([]models.Product, erro
 }
 
 func NewSqlProductsRepository(db *sql.DB) ProductRepository {
-	return &productRepo{
+	return &sqlRepo{
 		db,
 	}
 }
