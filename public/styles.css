@@ -1,0 +1,17 @@
+html {
+    margin:    0 auto;
+    max-width: 1024px;
+}
+
+main{
+    display: flex;
+    width: 100%;
+}
+
+section{
+    flex-grow: 1;
+}
+
+side-drawer {
+    width: 50vw;
+}

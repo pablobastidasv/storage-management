@@ -1,0 +1,54 @@
+{{ define "product_record_form" }}
+    <form hx-put="/api/storages/main/products">
+        <div id="error-alert"></div>
+        <div>
+            <label for="product">Producto</label>
+            <select name="product" id="product">
+                <option value="">-- Seleccione un producto --</option>
+                {{range .}}
+                    {{- /*gotype: co.bastriguez/inventory/internal/routes.Product*/ -}}
+                    <option value="{{.Id}}">{{.Name}} ({{.Presentation}})</option>
+                {{end}}
+            </select>
+        </div>
+        <div>
+            <label for="qty">Cantidad:</label>
+            <input id="qty" type="number" name="qty">
+        </div>
+
+        <div>
+            <button type="submit">Ingresar</button>
+        </div>
+    </form>
+{{ end }}
+
+{{ define "remission_form" }}
+    <form>
+        <div>
+            <label for="client">Client:</label>
+            <select name="client" id="client">
+                <option value="">-- seleccione un cliente --</option>
+                <option value="c-a">Cliente A</option>
+                <option value="c-b">Cliente B</option>
+                <option value="c-c">Cliente C</option>
+            </select>
+        </div>
+        <div>
+            <label for="product">Producto:</label>
+            <select name="product" id="product">
+                <option value="">-- seleccione un producto --</option>
+                <option value="p-a">Product A</option>
+                <option value="p-b">Product B</option>
+                <option value="p-c">Product C</option>
+            </select>
+        </div>
+        <div>
+            <label for="qty">Cantidad: </label>
+            <input type="text" name="qty" id="qty">
+        </div>
+        <div>
+            <button>Guardar</button>
+            <button>Cancelar</button>
+        </div>
+    </form>
+{{ end }}
