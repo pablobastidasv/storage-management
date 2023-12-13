@@ -4,31 +4,35 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+const (
+	productCreatedEvent string = "product-created"
+)
+
+type Option struct {
+	Id    string
+	Label string
+}
+
 type AdminHandlers struct {
 }
 
 func (a *AdminHandlers) HandleAdminHomePage(c *fiber.Ctx) error {
-	params := struct {
-		Products []Product
-	}{
-		Products: []Product{
-			{
-				Id:           "The ID",
-				Name:         "This is a product name",
-				Presentation: "Gramos",
-			}, {
-				Id:           "Another",
-				Name:         "Burrito",
-				Presentation: "Unidades",
-			},
-		},
-	}
-	return c.Render("pages/admin", params, "general-template")
+	return c.Render("pages/admin", nil, "general-template")
 }
 
 func (a *AdminHandlers) HandleAdminCreateProductFormFragment(c *fiber.Ctx) error {
+	params := struct {
+		Presentations []Option
+	}{
+		Presentations: []Option{
+			{
+				Id:    "A",
+				Label: "Option A",
+			},
+		},
+	}
 	c.Response().Header.Add(hxTrigger, openRightDrawerEvent)
-	return c.Render("admin_products_add_form", nil)
+	return c.Render("admin_products_add_form", params)
 }
 
 func NewAdminHandler() *AdminHandlers {

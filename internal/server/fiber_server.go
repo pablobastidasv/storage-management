@@ -39,6 +39,7 @@ func (s *Server) HandleProductsEndpoints(productHandler *handlers.ProductHandler
 	productsApi := s.app.Group("/api/products")
 
 	productsApi.Get("/", productHandler.HandleGetProducts)
+	productsApi.Post("/", productHandler.HandlePostProducts)
 }
 
 func (s *Server) HandleStoragesEndpoints(storageHandler *handlers.StorageHandlers) {

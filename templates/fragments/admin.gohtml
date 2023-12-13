@@ -7,14 +7,44 @@
         Create
     </button>
 
+    <div hx-trigger="product-created from:body, load" hx-get="/api/products">
+    </div>
+{{end}}
+
+{{ define "products-list"}}
     <ul>
         {{ range .Products }}
             {{- /*gotype: co.bastriguez/inventory/internal/handlers.Product*/ -}}
             <li>{{ .Name }} - {{ .Presentation }}</li>
         {{ end}}
     </ul>
-{{end}}
+{{ end}}
 
 {{define "admin_products_add_form"}}
     <h2>Add product</h2>
+    <form hx-post="/api/products">
+        <div>
+            <label for="name">
+                Name:
+            </label>
+            <input type="text" id="name">
+        </div>
+        <div>
+            <label for="presentation">
+                Presentación:
+            </label>
+            <select name="presentation" id="presentation">
+                <option value="">-- Seleccione la presentación --</option>
+                {{ range .Presentations }}
+                    <option value="{{ .Id }}">{{ .Label }}</option>
+                {{ end }}
+            </select>
+        </div>
+
+        <div>
+            <button type="submit" class="btn btn-primary">
+                Guardar
+            </button>
+        </div>
+    </form>
 {{end}}
