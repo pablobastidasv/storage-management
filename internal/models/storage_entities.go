@@ -7,9 +7,9 @@ type RemissionState int8
 
 const (
 	KG      Presentation = "KG"
-	Grms                 = "GRAMS"
-	Amount               = "QTY"
-	unknown              = "UNKNOWN"
+	Grms    Presentation = "GRAMS"
+	Amount  Presentation = "QTY"
+	unknown Presentation = "UNKNOWN"
 )
 
 type (

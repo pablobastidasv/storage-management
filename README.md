@@ -11,12 +11,14 @@
 title: Storage Model Diagrama
 ---
 classDiagram
-    class Storage {
-        -[]Item items
-    }
-    class Item {
+    class InventoryItem {
         -int qty
-        -Product product
+        -InventoryProduct product
+    }
+
+    class InventoryProduct {
+        -string name
+        -Presentation presentation
     }
 
     class Product {
@@ -31,15 +33,8 @@ classDiagram
         GRMS
     }
 
-    class Transaction {
-        -Time datetime
-        -Product product
-        -Storage storage
-        -int qty
-    }
-
-    Storage "1" --* "*" Item
-    Item "1" --o "1" Product
+    InventoryItem "1" --o "1" InventoryProduct
+    InventoryProduct "*" --o "1" Presentation
     Product "*" --o "1" Presentation
     Transaction "*" --o "1" Product
     Transaction "*" --o "1" Storage

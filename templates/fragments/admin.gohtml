@@ -1,0 +1,20 @@
+{{define "admin_products_section"}}
+    <h2>Products</h2>
+
+    <button class="btn btn-primary"
+            hx-get="/admin/product/create-form"
+            hx-target="#right-drawer">
+        Create
+    </button>
+
+    <ul>
+        {{ range .Products }}
+            {{- /*gotype: co.bastriguez/inventory/internal/handlers.Product*/ -}}
+            <li>{{ .Name }} - {{ .Presentation }}</li>
+        {{ end}}
+    </ul>
+{{end}}
+
+{{define "admin_products_add_form"}}
+    <h2>Add product</h2>
+{{end}}

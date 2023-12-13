@@ -4,6 +4,12 @@ import (
 	"time"
 )
 
+const (
+	hxTrigger             = "HX-Trigger"
+	openRightDrawerEvent  = "open-right-drawer"
+	closeRightDrawerEvent = "close-right-drawer"
+)
+
 type (
 	Product struct {
 		Id           string

@@ -34,6 +34,11 @@ func main() {
 
 	fiberServer.HandleStoragesEndpoints(storageHandler)
 
+	// Admin pages
+	adminHandlers := handlers.NewAdminHandler()
+
+	fiberServer.HandleAdminEndpoints(adminHandlers)
+
 	// start service
 	log.Fatal(fiberServer.Start())
 }

@@ -49,7 +49,11 @@ func (s *Server) HandleStoragesEndpoints(storageHandler *handlers.StorageHandler
 	storageApi.Get("/main/products", storageHandler.HandleGetProducts)
 	storageApi.Put("/main/products", storageHandler.HandlePutProducts)
 	storageApi.Get("/main/remissions", storageHandler.HandleGetRemissions) // TODO: move to remissions
+}
 
+func (s *Server) HandleAdminEndpoints(adminHandler *handlers.AdminHandlers) {
+	s.app.Get("/admin", adminHandler.HandleAdminHomePage)
+	s.app.Get("/admin/product/create-form", adminHandler.HandleAdminCreateProductFormFragment)
 }
 
 func (s *Server) Start() error {
