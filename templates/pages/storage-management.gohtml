@@ -1,0 +1,40 @@
+<section>
+    <h2>Bodega</h2>
+
+    <div>
+        <button class="btn btn-primary"
+                hx-get="/inventory/product/add-form"
+                hx-target="#right-drawer">
+            Ingresar Producto
+        </button>
+    </div>
+
+    <div id="product-panel"
+         hx-get="/api/storages/main/products"
+         hx-trigger="load-storage-products from:body">
+        {{ block "inventory" .Products }}
+            <ul id="products">
+                {{ range . }}
+                    {{- /*gotype: co.bastriguez/inventory/internal/routes.ProductItem*/ -}}
+                    <li>{{ .Name }} - {{ .Amount }}</li>
+                {{end}}
+            </ul>
+        {{ end }}
+    </div>
+</section>
+
+<section>
+    <h2>Remisiones</h2>
+
+    {{ block "remissions" .Remissions }}
+        <ul id="remissions">
+            {{ range . }}
+                <li>
+                    {{- /*gotype: co.bastriguez/inventory/internal/routes.RemissionItem*/ -}}
+                    {{.CreatedAt.Format "02/01/2006"}} - {{.ClientName}} - {{.ProductItem.Name}}
+                    - {{.ProductItem.Amount}}
+                </li>
+            {{ end }}
+        </ul>
+    {{end}}
+</section>

@@ -1,18 +1,27 @@
 package repository
 
 import (
-	"co.bastriguez/inventory/internal/models"
 	"context"
 	"database/sql"
 	"errors"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"co.bastriguez/inventory/internal/models"
 )
 
 type StorageRepository interface {
-	FetchItemsByStorage(ctx context.Context, storage *models.Storage) ([]models.InventoryItem, error)
-	FindItemByProductId(ctx context.Context, storageId string, productId string) (*models.InventoryItem, error)
+	FetchItemsByStorage(
+		ctx context.Context,
+		storage *models.Storage,
+	) ([]models.InventoryItem, error)
+	FindItemByProductId(
+		ctx context.Context,
+		storageId string,
+		productId string,
+	) (*models.InventoryItem, error)
 	UpsertItem(ctx context.Context, storageId string, item *models.InventoryItem) error
 	FindMainStorage(ctx context.Context) (*models.Storage, error)
 }
@@ -25,7 +34,10 @@ type mongoRepository struct {
 	collection *mongo.Collection
 }
 
-func (m mongoRepository) FetchItemsByStorage(ctx context.Context, _ *models.Storage) ([]models.InventoryItem, error) {
+func (m mongoRepository) FetchItemsByStorage(
+	ctx context.Context,
+	_ *models.Storage,
+) ([]models.InventoryItem, error) {
 	found, err := m.collection.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
@@ -39,7 +51,11 @@ func (m mongoRepository) FetchItemsByStorage(ctx context.Context, _ *models.Stor
 	return items, nil
 }
 
-func (m mongoRepository) FindItemByProductId(ctx context.Context, _ string, productId string) (*models.InventoryItem, error) {
+func (m mongoRepository) FindItemByProductId(
+	ctx context.Context,
+	_ string,
+	productId string,
+) (*models.InventoryItem, error) {
 	res := m.collection.FindOne(ctx, bson.D{{"product.id", productId}})
 	var repoItem InventoryItem
 	if err := res.Decode(&repoItem); err != nil {
@@ -60,7 +76,11 @@ func (m mongoRepository) FindItemByProductId(ctx context.Context, _ string, prod
 }
 
 // UpsertItem TODO: if item does not, exist create a new one
-func (m mongoRepository) UpsertItem(ctx context.Context, _ string, item *models.InventoryItem) error {
+func (m mongoRepository) UpsertItem(
+	ctx context.Context,
+	_ string,
+	item *models.InventoryItem,
+) error {
 	filter := bson.D{{"product.id", item.Product.Id}}
 
 	prod := InventoryProduct{
@@ -98,7 +118,11 @@ func (r *relationalRepository) FindMainStorage(_ context.Context) (*models.Stora
 	return &storage, nil
 }
 
-func (r *relationalRepository) FindItemByProductId(_ context.Context, storageId string, productId string) (*models.InventoryItem, error) {
+func (r *relationalRepository) FindItemByProductId(
+	_ context.Context,
+	storageId string,
+	productId string,
+) (*models.InventoryItem, error) {
 	row := r.db.QueryRow(
 		`select i.quantity, p.name, p.presentation from items i 
 			join public.products p on p.id = i.product_id 
@@ -122,7 +146,11 @@ func (r *relationalRepository) FindItemByProductId(_ context.Context, storageId 
 	return &item, nil
 }
 
-func (r *relationalRepository) UpsertItem(_ context.Context, storageId string, item *models.InventoryItem) error {
+func (r *relationalRepository) UpsertItem(
+	_ context.Context,
+	storageId string,
+	item *models.InventoryItem,
+) error {
 	_, err := r.db.Exec(`
 		INSERT INTO items(storage_id, product_id, quantity)
 			VALUES($1, $2, $3) 
@@ -137,7 +165,10 @@ func (r *relationalRepository) UpsertItem(_ context.Context, storageId string, i
 	return nil
 }
 
-func (r *relationalRepository) FetchItemsByStorage(_ context.Context, _ *models.Storage) ([]models.InventoryItem, error) {
+func (r *relationalRepository) FetchItemsByStorage(
+	_ context.Context,
+	_ *models.Storage,
+) ([]models.InventoryItem, error) {
 	rows, err := r.db.Query(`select i.quantity, p.id, p.name, p.presentation 
 								 from items i 
 								 join public.products p on p.id = i.product_id

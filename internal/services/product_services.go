@@ -1,9 +1,10 @@
 package services
 
 import (
+	"context"
+
 	"co.bastriguez/inventory/internal/models"
 	"co.bastriguez/inventory/internal/repository"
-	"context"
 )
 
 type (
@@ -12,7 +13,7 @@ type (
 	}
 
 	ProductList struct {
-		Items []ProductOverview
+		Items []models.Product
 	}
 
 	ProductOverview struct {
@@ -22,27 +23,28 @@ type (
 	}
 )
 
-func (p productService) FetchProducts(ctx context.Context) (ProductList, error) {
+// CreateProduct implements ProductsService.
+func (p *productService) FetchProducts(ctx context.Context) (*ProductList, error) {
 	fetchedProduct, err := p.productRepo.FetchProducts(ctx)
 	if err != nil {
-		return ProductList{}, err
+		return nil, err
 	}
 
 	var overviews ProductList
 	for _, product := range fetchedProduct {
-		overview := ProductOverview{
-			Id:           product.Id,
-			Name:         product.Name,
-			Presentation: product.Presentation,
-		}
-		overviews.Items = append(overviews.Items, overview)
+		overviews.Items = append(overviews.Items, product)
 	}
 
-	return overviews, nil
+	return &overviews, nil
+}
+
+func (p *productService) CreateProduct(ctx context.Context, product *models.Product) error {
+	return p.productRepo.PersistProduct(ctx, product)
 }
 
 type ProductsService interface {
-	FetchProducts(ctx context.Context) (ProductList, error)
+	FetchProducts(ctx context.Context) (*ProductList, error)
+	CreateProduct(ctx context.Context, porduct *models.Product) error
 }
 
 func NewProductService(productRepo repository.ProductRepository) ProductsService {

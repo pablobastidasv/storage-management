@@ -8,10 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const (
-	hxTrigger = "HX-Trigger"
-)
-
 type StorageHandlers struct {
 	storageService  services.StorageService
 	productsService services.ProductsService
@@ -46,7 +42,7 @@ func (r *StorageHandlers) HandlePutProducts(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	ctx.Response().Header.Add(hxTrigger, "close-right-drawer, load-storage-products")
+	ctx.Response().Header.Add(hxTrigger, fmt.Sprintf("%s, load-storage-products", closeRightDrawerEvent))
 	return ctx.SendStatus(204)
 }
 
@@ -66,11 +62,11 @@ func (r *StorageHandlers) HandleInventoryHomePage(c *fiber.Ctx) error {
 
 	indexVars["Remissions"] = []RemissionItem{}
 
-	return c.Render("index", indexVars)
+	return c.Render("pages/storage-management", indexVars, "general-template")
 }
 
 func (r *StorageHandlers) HandleAddProductFormFragment(c *fiber.Ctx) error {
-	c.Response().Header.Add(hxTrigger, "open-right-drawer")
+	c.Response().Header.Add(hxTrigger, openRightDrawerEvent)
 	products, err := r.loadProducts(c.Context())
 	if err != nil {
 		return err

@@ -1,15 +1,20 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
-type Presentation string
-type RemissionState int8
+type (
+	Presentation   string
+	RemissionState int8
+)
 
 const (
 	KG      Presentation = "KG"
-	Grms                 = "GRAMS"
-	Amount               = "QTY"
-	unknown              = "UNKNOWN"
+	Grms    Presentation = "GRAMS"
+	Amount  Presentation = "QTY"
+	unknown Presentation = "UNKNOWN"
 )
 
 type (
@@ -43,6 +48,26 @@ type (
 	}
 )
 
+func CreateProduct(id string, name string, presentation string) (*Product, error) {
+	if NewPresentation(presentation) == unknown {
+		return nil, &DomainError{
+			desc: fmt.Sprintf("'%s' is a invalid presentation", presentation),
+		}
+	}
+
+	if len(name) == 0 {
+		return nil, &DomainError{
+			desc: "Product name cannot be empty",
+		}
+	}
+
+	return &Product{
+		Id:           id,
+		Name:         name,
+		Presentation: Presentation(presentation),
+	}, nil
+}
+
 func NewPresentation(presentation string) Presentation {
 	switch presentation {
 	case "KG":
@@ -54,4 +79,18 @@ func NewPresentation(presentation string) Presentation {
 	default:
 		return unknown
 	}
+}
+
+func ListPresentations() []Presentation {
+	return []Presentation{
+		KG, Grms, Amount,
+	}
+}
+
+type DomainError struct {
+	desc string
+}
+
+func (e *DomainError) Error() string {
+	return e.desc
 }
