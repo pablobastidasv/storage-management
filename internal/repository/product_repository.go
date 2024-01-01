@@ -1,17 +1,19 @@
 package repository
 
 import (
-	"co.bastriguez/inventory/internal/models"
 	"context"
 	"errors"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"co.bastriguez/inventory/internal/models"
 )
 
 const ProductsCollectionName = "products"
 
 type ProductRepository interface {
-	PersistProduct(ctx context.Context) (*models.Product, error)
+	PersistProduct(ctx context.Context, product *models.Product) error
 	FetchProducts(ctx context.Context) ([]models.Product, error)
 	ExistProductById(ctx context.Context, productId string) (bool, error)
 	FindProduct(ctx context.Context, id string) (*models.Product, error)
@@ -22,9 +24,17 @@ type mongoProductRepo struct {
 	collection *mongo.Collection
 }
 
-func (m *mongoProductRepo) PersistProduct(ctx context.Context) (*models.Product, error) {
-	//TODO implement me
-	panic("implement me")
+func (m *mongoProductRepo) PersistProduct(
+	ctx context.Context,
+	product *models.Product,
+) error {
+	toInsert := Product{
+		Id:           product.Id,
+		Name:         product.Name,
+		Presentation: product.Presentation,
+	}
+	_, err := m.collection.InsertOne(ctx, toInsert)
+	return err
 }
 
 func (m *mongoProductRepo) FindProduct(ctx context.Context, id string) (*models.Product, error) {
