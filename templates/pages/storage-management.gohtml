@@ -3,14 +3,14 @@
 
     <div>
         <button class="btn btn-primary"
-                hx-get="/inventory/product/add-form"
+                hx-get="/storages/main/items/add"
                 hx-target="#right-drawer">
             Ingresar Producto
         </button>
     </div>
 
     <div id="product-panel"
-         hx-get="/api/storages/main/products"
+         hx-get="/storages/main/items"
          hx-trigger="load-storage-products from:body">
         {{ block "inventory" .Products }}
             <ul id="products">

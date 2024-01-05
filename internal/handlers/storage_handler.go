@@ -1,11 +1,13 @@
 package handlers
 
 import (
-	"co.bastriguez/inventory/internal/models"
-	"co.bastriguez/inventory/internal/services"
 	"context"
 	"fmt"
+
 	"github.com/gofiber/fiber/v2"
+
+	"co.bastriguez/inventory/internal/models"
+	"co.bastriguez/inventory/internal/services"
 )
 
 type StorageHandlers struct {
@@ -13,7 +15,10 @@ type StorageHandlers struct {
 	productsService services.ProductsService
 }
 
-func NewStorageHandler(service services.StorageService, productsService services.ProductsService) *StorageHandlers {
+func NewStorageHandler(
+	service services.StorageService,
+	productsService services.ProductsService,
+) *StorageHandlers {
 	return &StorageHandlers{
 		storageService:  service,
 		productsService: productsService,
@@ -42,7 +47,10 @@ func (r *StorageHandlers) HandlePutProducts(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	ctx.Response().Header.Add(hxTrigger, fmt.Sprintf("%s, load-storage-products", closeRightDrawerEvent))
+	ctx.Response().Header.Add(
+		hxTrigger,
+		fmt.Sprintf("%s, load-storage-products", closeRightDrawerEvent),
+	)
 	return ctx.SendStatus(204)
 }
 
@@ -74,6 +82,7 @@ func (r *StorageHandlers) HandleAddProductFormFragment(c *fiber.Ctx) error {
 	return c.Render("product_record_form", products)
 }
 
+// TODO: Remove this one from here
 func (r *StorageHandlers) loadProducts(ctx context.Context) ([]Product, error) {
 	prods, err := r.productsService.FetchProducts(ctx)
 	if err != nil {
@@ -107,7 +116,6 @@ func (r *StorageHandlers) fetchStorageItems(ctx context.Context) ([]ProductItem,
 		})
 	}
 	return products, nil
-
 }
 
 func defineAmount(qty *int, presentation models.Presentation) string {

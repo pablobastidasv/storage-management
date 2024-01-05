@@ -1,13 +1,15 @@
 package server
 
 import (
-	"co.bastriguez/inventory/internal/handlers"
-	"co.bastriguez/inventory/internal/services"
 	"errors"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
-	"log"
+
+	"co.bastriguez/inventory/internal/handlers"
+	"co.bastriguez/inventory/internal/services"
 )
 
 type (
@@ -36,7 +38,7 @@ func NewFiberServer(listenAddr string) *Server {
 }
 
 func (s *Server) HandleProductsEndpoints(productHandler *handlers.ProductHandlers) {
-	productsApi := s.app.Group("/api/products")
+	productsApi := s.app.Group("/products")
 
 	productsApi.Get("/", productHandler.HandleGetProducts)
 	productsApi.Post("/", productHandler.HandlePostProducts)
@@ -44,17 +46,20 @@ func (s *Server) HandleProductsEndpoints(productHandler *handlers.ProductHandler
 
 func (s *Server) HandleStoragesEndpoints(storageHandler *handlers.StorageHandlers) {
 	s.app.Get("/", storageHandler.HandleInventoryHomePage)
-	s.app.Get("/inventory/product/add-form", storageHandler.HandleAddProductFormFragment)
 
-	storageApi := s.app.Group("/api/storages")
-	storageApi.Get("/main/products", storageHandler.HandleGetProducts)
-	storageApi.Put("/main/products", storageHandler.HandlePutProducts)
-	storageApi.Get("/main/remissions", storageHandler.HandleGetRemissions) // TODO: move to remissions
+	storageApi := s.app.Group("/storages")
+	storageApi.Get("/main/items/add", storageHandler.HandleAddProductFormFragment)
+	storageApi.Get("/main/items", storageHandler.HandleGetProducts)
+	storageApi.Put("/main/items", storageHandler.HandlePutProducts)
+	storageApi.Get(
+		"/main/remissions",
+		storageHandler.HandleGetRemissions,
+	)
 }
 
 func (s *Server) HandleAdminEndpoints(adminHandler *handlers.AdminHandlers) {
 	s.app.Get("/admin", adminHandler.HandleAdminHomePage)
-	s.app.Get("/admin/product/create-form", adminHandler.HandleAdminCreateProductFormFragment)
+	s.app.Get("/products/new", adminHandler.HandleAdminCreateProductFormFragment)
 }
 
 func (s *Server) Start() error {
