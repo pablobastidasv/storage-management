@@ -1,16 +1,23 @@
 package main
 
 import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+
 	"co.bastriguez/inventory/internal/databases"
 	"co.bastriguez/inventory/internal/handlers"
 	"co.bastriguez/inventory/internal/repository"
 	"co.bastriguez/inventory/internal/server"
 	"co.bastriguez/inventory/internal/services"
-	"log"
 )
 
 func main() {
-	addr := ":8080"
+	loadEnv()
+
+	addr := os.Getenv("ADDRS")
 
 	// database access
 	db, err := databases.NewMongo()
@@ -41,4 +48,32 @@ func main() {
 
 	// start service
 	log.Fatal(fiberServer.Start())
+}
+
+func loadEnv() {
+	env := os.Getenv("BASTRIGUEZ_ENV")
+	if "" == env {
+		env = "dev"
+	}
+
+	err := godotenv.Load(fmt.Sprintf(".env.%s.local", env))
+	if err != nil {
+		log.Printf("Error loading file env file: %v\n", err)
+	}
+
+	if "test" != env {
+		err = godotenv.Load(".env.local")
+		if err != nil {
+			log.Printf("Error loading file env file: %v\n", err)
+		}
+	}
+	err = godotenv.Load(fmt.Sprintf(".env.%s", env))
+	if err != nil {
+		log.Printf("Error loading file env file: %v\n", err)
+	}
+
+	err = godotenv.Load() // The original .env
+	if err != nil {
+		log.Printf("Error loading file env file: %v\n", err)
+	}
 }

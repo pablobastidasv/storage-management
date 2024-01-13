@@ -4,6 +4,14 @@
 
 - [side-drawer][drawer-component-url]
 
+# Run locally
+
+Ensure that the file `.env` exists and have the value of the Client Secret for the authentication
+
+```sh
+AUTH_CLIENT_SECRET = "<<secret value>>"
+```
+
 # Designs
 
 ```mermaid
