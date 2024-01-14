@@ -92,7 +92,7 @@ func (h *Handlers) HandleCallback(c *fiber.Ctx) error {
 }
 
 func (h *Handlers) HandleLogout(c *fiber.Ctx) error {
-	issuer := os.Getenv("AUTH_ISSUER")
+	issuer := os.Getenv("AUTH_ISSUER") + os.Getenv("AUTH_LOGOUT_PATH")
 	logoutUrl, err := url.Parse(issuer)
 	if err != nil {
 		return err
