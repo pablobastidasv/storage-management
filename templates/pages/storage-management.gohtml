@@ -16,7 +16,7 @@
             <ul id="products">
                 {{ range . }}
                     {{- /*gotype: co.bastriguez/inventory/internal/routes.ProductItem*/ -}}
-                    <li>{{ .Name }} - {{ .Amount }}</li>
+                    <li>{{ .Name }} - <span>{{ .Qty }}</span> {{ .Presentation }}</li>
                 {{end}}
             </ul>
         {{ end }}

@@ -25,7 +25,7 @@ func NewStorageHandler(
 	}
 }
 
-func (r *StorageHandlers) HandleGetProducts(ctx *fiber.Ctx) error {
+func (r *StorageHandlers) HandleGetItems(ctx *fiber.Ctx) error {
 	productItems, err := r.fetchStorageItems(ctx.Context())
 	if err != nil {
 		return err
@@ -110,9 +110,11 @@ func (r *StorageHandlers) fetchStorageItems(ctx context.Context) ([]ProductItem,
 	var products []ProductItem
 	for _, i := range storage.Items {
 		products = append(products, ProductItem{
-			Id:     i.ProductId,
-			Name:   i.Name,
-			Amount: defineAmount(&i.Qty, i.Presentation),
+			Id:           i.ProductId,
+			Name:         i.Name,
+			Amount:       defineAmount(&i.Qty, i.Presentation),
+			Qty:          i.Qty,
+			Presentation: translateUnit(i.Presentation),
 		})
 	}
 	return products, nil

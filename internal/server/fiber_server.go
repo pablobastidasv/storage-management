@@ -73,7 +73,7 @@ func (s *Server) HandleStoragesEndpoints(storageHandler *handlers.StorageHandler
 
 	storageApi := s.app.Group("/storages", s.isAuthenticated)
 	storageApi.Get("/main/items/add", storageHandler.HandleAddProductFormFragment)
-	storageApi.Get("/main/items", storageHandler.HandleGetProducts)
+	storageApi.Get("/main/items", storageHandler.HandleGetItems)
 	storageApi.Put("/main/items", storageHandler.HandlePutProducts)
 	storageApi.Get(
 		"/main/remissions",

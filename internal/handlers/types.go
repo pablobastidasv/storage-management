@@ -18,9 +18,11 @@ type (
 	}
 
 	ProductItem struct {
-		Id     string
-		Name   string
-		Amount string
+		Id           string
+		Name         string
+		Amount       string
+		Qty          int
+		Presentation string
 	}
 
 	RemissionItem struct {
