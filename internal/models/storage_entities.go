@@ -8,6 +8,8 @@ import (
 type (
 	Presentation   string
 	RemissionState int8
+
+	ProductName string
 )
 
 const (
@@ -35,8 +37,8 @@ type (
 	}
 
 	Product struct {
-		Id           string
-		Name         string
+		Id           ProductId
+		Name         ProductName
 		Presentation Presentation
 	}
 
@@ -48,36 +50,50 @@ type (
 	}
 )
 
-func CreateProduct(id string, name string, presentation string) (*Product, error) {
-	if NewPresentation(presentation) == unknown {
-		return nil, &DomainError{
-			desc: fmt.Sprintf("'%s' is a invalid presentation", presentation),
-		}
+func NewProduct(id string, name string, presentation string) (*Product, error) {
+	valId, err := ProductIdFrom(id)
+	if err != nil {
+		return nil, err
 	}
 
-	if len(name) == 0 {
-		return nil, &DomainError{
-			desc: "Product name cannot be empty",
-		}
+	valPresentation, err := NewPresentation(presentation)
+	if err != nil {
+		return nil, err
+	}
+
+	valName, err := ProductNameFrom(name)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Product{
-		Id:           id,
-		Name:         name,
-		Presentation: Presentation(presentation),
+		Id:           valId,
+		Name:         valName,
+		Presentation: valPresentation,
 	}, nil
 }
 
-func NewPresentation(presentation string) Presentation {
+func CreateProduct(id string, name string, presentation string) (*Product, error) {
+	return NewProduct(id, name, presentation)
+}
+
+func ProductNameFrom(name string) (ProductName, error) {
+	if len(name) == 0 {
+		return ProductName(""), NewDomainError("Product name cannot be empty")
+	}
+	return ProductName(name), nil
+}
+
+func NewPresentation(presentation string) (Presentation, error) {
 	switch presentation {
 	case "KG":
-		return KG
+		return KG, nil
 	case "GRAMS":
-		return Grms
+		return Grms, nil
 	case "QUANTITY":
-		return Amount
+		return Amount, nil
 	default:
-		return unknown
+		return unknown, NewDomainError(fmt.Sprintf("'%s' is an invalid presentation", presentation))
 	}
 }
 
@@ -87,10 +103,10 @@ func ListPresentations() []Presentation {
 	}
 }
 
-type DomainError struct {
-	desc string
+func (p *Presentation) ToString() string {
+	return string(*p)
 }
 
-func (e *DomainError) Error() string {
-	return e.desc
+func (n *ProductName) ToString() string {
+	return string(*n)
 }

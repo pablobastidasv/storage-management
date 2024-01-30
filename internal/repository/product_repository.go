@@ -29,8 +29,8 @@ func (m *mongoProductRepo) PersistProduct(
 	product *models.Product,
 ) error {
 	toInsert := Product{
-		Id:           product.Id,
-		Name:         product.Name,
+		Id:           product.Id.ToString(),
+		Name:         product.Name.ToString(),
 		Presentation: product.Presentation,
 	}
 	_, err := m.collection.InsertOne(ctx, toInsert)
@@ -47,16 +47,9 @@ func (m *mongoProductRepo) FindProduct(ctx context.Context, id string) (*models.
 		return nil, err
 	}
 
-	product := toProdModel(&prod)
-	return product, nil
-}
-
-func toProdModel(p *Product) *models.Product {
-	return &models.Product{
-		Id:           p.Id,
-		Name:         p.Name,
-		Presentation: p.Presentation,
-	}
+	return models.NewProduct(
+		prod.Id, prod.Name, prod.Presentation.ToString(),
+	)
 }
 
 func (m *mongoProductRepo) FetchProducts(ctx context.Context) ([]models.Product, error) {
@@ -72,12 +65,17 @@ func (m *mongoProductRepo) FetchProducts(ctx context.Context) ([]models.Product,
 
 	var products []models.Product
 	for _, p := range mongoProducts {
-		products = append(products, models.Product{
-			Id:           p.Id,
-			Name:         p.Name,
-			Presentation: p.Presentation,
-		})
+		prod, err := models.NewProduct(
+			p.Id,
+			p.Name,
+			p.Presentation.ToString(),
+		)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, *prod)
 	}
+
 	return products, nil
 }
 

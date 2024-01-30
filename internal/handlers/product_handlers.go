@@ -49,8 +49,8 @@ func (p *ProductHandlers) HandleGetProducts(c *fiber.Ctx) error {
 
 	for _, p := range productList.Items {
 		params.Products = append(params.Products, Product{
-			Id:           p.Id,
-			Name:         p.Name,
+			Id:           p.Id.ToString(),
+			Name:         p.Name.ToString(),
 			Presentation: translateUnit(p.Presentation),
 		})
 	}

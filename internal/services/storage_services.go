@@ -1,10 +1,11 @@
 package services
 
 import (
-	"co.bastriguez/inventory/internal/models"
-	"co.bastriguez/inventory/internal/repository"
 	"context"
 	"fmt"
+
+	"co.bastriguez/inventory/internal/models"
+	"co.bastriguez/inventory/internal/repository"
 )
 
 type (
@@ -109,15 +110,18 @@ func (s storageService) checkIfProductExist(ctx context.Context, productId strin
 	return nil
 }
 
-func (s storageService) fetchProductById(ctx context.Context, productId string) (*models.InventoryProduct, error) {
+func (s storageService) fetchProductById(
+	ctx context.Context,
+	productId string,
+) (*models.InventoryProduct, error) {
 	product, err := s.productRepo.FindProduct(ctx, productId)
 	if err != nil {
 		return nil, err
 	}
 
 	inventoryProduct := &models.InventoryProduct{
-		Id:           product.Id,
-		Name:         product.Name,
+		Id:           product.Id.ToString(),
+		Name:         product.Name.ToString(),
 		Presentation: product.Presentation,
 	}
 

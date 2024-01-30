@@ -92,8 +92,8 @@ func (r *StorageHandlers) loadProducts(ctx context.Context) ([]Product, error) {
 	var products []Product
 	for _, p := range prods.Items {
 		products = append(products, Product{
-			Id:           p.Id,
-			Name:         p.Name,
+			Id:           p.Id.ToString(),
+			Name:         p.Name.ToString(),
 			Presentation: translateUnit(p.Presentation),
 		})
 	}

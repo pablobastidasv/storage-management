@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/gofiber/template/html/v2"
 
@@ -31,6 +32,7 @@ func NewFiberServer(listenAddr string) *Server {
 		ErrorHandler: ErrorHandler,
 	})
 	app.Use(logger.New())
+	app.Use(recover.New())
 
 	app.Static("/", "./public")
 

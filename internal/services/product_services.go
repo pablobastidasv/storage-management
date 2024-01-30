@@ -23,6 +23,17 @@ type (
 	}
 )
 
+// DeleteProduct implements ProductsService.
+func (*productService) DeleteProduct(ctx context.Context, productId string) error {
+	return models.NewDomainError("Not implemented yet")
+}
+
+type ProductsService interface {
+	FetchProducts(ctx context.Context) (*ProductList, error)
+	CreateProduct(ctx context.Context, porduct *models.Product) error
+	DeleteProduct(ctx context.Context, productId string) error
+}
+
 // CreateProduct implements ProductsService.
 func (p *productService) FetchProducts(ctx context.Context) (*ProductList, error) {
 	fetchedProduct, err := p.productRepo.FetchProducts(ctx)
@@ -40,11 +51,6 @@ func (p *productService) FetchProducts(ctx context.Context) (*ProductList, error
 
 func (p *productService) CreateProduct(ctx context.Context, product *models.Product) error {
 	return p.productRepo.PersistProduct(ctx, product)
-}
-
-type ProductsService interface {
-	FetchProducts(ctx context.Context) (*ProductList, error)
-	CreateProduct(ctx context.Context, porduct *models.Product) error
 }
 
 func NewProductService(productRepo repository.ProductRepository) ProductsService {

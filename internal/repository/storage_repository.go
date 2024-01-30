@@ -141,7 +141,10 @@ func (r *relationalRepository) FindItemByProductId(
 		return nil, err
 	}
 	item.Product.Id = productId
-	item.Product.Presentation = models.NewPresentation(presentation)
+	item.Product.Presentation, err = models.NewPresentation(presentation)
+	if err != nil {
+		return nil, err
+	}
 
 	return &item, nil
 }
@@ -185,7 +188,10 @@ func (r *relationalRepository) FetchItemsByStorage(
 		if err := rows.Scan(&item.Qty, &item.Product.Id, &item.Product.Name, &presentation); err != nil {
 			return nil, nil
 		}
-		item.Product.Presentation = models.NewPresentation(presentation)
+		item.Product.Presentation, err = models.NewPresentation(presentation)
+		if err != nil {
+			return nil, err
+		}
 
 		items = append(items, item)
 	}
