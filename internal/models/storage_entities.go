@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type (
@@ -10,6 +12,8 @@ type (
 	RemissionState int8
 
 	ProductName string
+
+	StorageId string
 )
 
 const (
@@ -109,4 +113,12 @@ func (p *Presentation) ToString() string {
 
 func (n *ProductName) ToString() string {
 	return string(*n)
+}
+
+func StorageIdFrom(value string) (StorageId, error) {
+	_, err := uuid.Parse(value)
+	if err != nil {
+		return StorageId("INVALID"), err
+	}
+	return StorageId(value), nil
 }

@@ -1,14 +1,16 @@
 package repository_test
 
 import (
-	"co.bastriguez/inventory/internal/models"
-	"co.bastriguez/inventory/internal/repository"
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/mongo"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/mongo"
+
+	"co.bastriguez/inventory/internal/models"
+	"co.bastriguez/inventory/internal/repository"
 )
 
 func TestMongoProductRepo_FetchProducts(t *testing.T) {
@@ -24,8 +26,8 @@ func TestMongoProductRepo_FetchProducts(t *testing.T) {
 	var expected []models.Product
 	for _, prod := range givenProducts {
 		expected = append(expected, models.Product{
-			Id:           prod.Id,
-			Name:         prod.Name,
+			Id:           models.ProductId(prod.Id),
+			Name:         models.ProductName(prod.Name),
 			Presentation: prod.Presentation,
 		})
 	}
@@ -91,10 +93,21 @@ func Test_mongoProductRepo_ExistProductById(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sut := repository.NewMongoProductsRepository(tt.fields.database)
 			got, err := sut.ExistProductById(tt.args.ctx, tt.args.productId)
-			if !tt.wantErr(t, err, fmt.Sprintf("ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId)) {
+			if !tt.wantErr(
+				t,
+				err,
+				fmt.Sprintf("ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId),
+			) {
 				return
 			}
-			assert.Equalf(t, tt.want, got, "ExistProductById(%v, %v)", tt.args.ctx, tt.args.productId)
+			assert.Equalf(
+				t,
+				tt.want,
+				got,
+				"ExistProductById(%v, %v)",
+				tt.args.ctx,
+				tt.args.productId,
+			)
 		})
 	}
 }
@@ -109,8 +122,8 @@ func Test_mongoProductRepo_FindProduct(t *testing.T) {
 	existingProductId := randomProductId(t)
 	persistedProduct := createRandomProductWith(ctx, t, collection, existingProductId)
 	expectedProduct := models.Product{
-		Id:           persistedProduct.Id,
-		Name:         persistedProduct.Name,
+		Id:           models.ProductId(persistedProduct.Id),
+		Name:         models.ProductName(persistedProduct.Name),
 		Presentation: persistedProduct.Presentation,
 	}
 
