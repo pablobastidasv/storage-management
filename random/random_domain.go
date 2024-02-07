@@ -10,16 +10,29 @@ func WithProductId(id string) func(*models.InventoryProduct) {
 	}
 }
 
-func InventoryProduct(options ...func(*models.InventoryProduct)) *models.InventoryProduct {
-	inv := &models.InventoryProduct{
+func InventoryProduct(options ...func(*models.InventoryProduct)) models.InventoryProduct {
+	inv := models.InventoryProduct{
 		Id:           Uuid(),
 		Name:         String(),
 		Presentation: models.Grms,
 	}
 
 	for _, o := range options {
-		o(inv)
+		o(&inv)
 	}
 
 	return inv
+}
+
+func InventoryItem(options ...func(*models.InventoryItem)) models.InventoryItem {
+	item := models.InventoryItem{
+		Product: InventoryProduct(),
+		Qty:     PositiveInt(),
+	}
+
+	for _, o := range options {
+		o(&item)
+	}
+
+	return item
 }

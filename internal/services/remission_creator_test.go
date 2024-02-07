@@ -43,14 +43,12 @@ func Test_CreateRemission_inventoryItemAmmountOfProductDecrease(t *testing.T) {
 	productId := random.Uuid()
 	qty := 6
 
-	product := *random.InventoryProduct(random.WithProductId(productId))
+	initialQty := func(i *models.InventoryItem) {
+		i.Qty = 10
+	}
+	inventoryItem := random.InventoryItem(initialQty)
 
-	inventoryItem := new(models.InventoryItem)
-	inventoryItem.Product = product
-	inventoryItem.Qty = 10
-
-	expectedInventoryItem := new(models.InventoryItem)
-	expectedInventoryItem.Product = product
+	expectedInventoryItem := inventoryItem
 	expectedInventoryItem.Qty = 4
 
 	mock.
@@ -59,12 +57,12 @@ func Test_CreateRemission_inventoryItemAmmountOfProductDecrease(t *testing.T) {
 			ctx,
 			models.StorageId(storageId),
 			models.ProductId(productId),
-		).Return(inventoryItem, nil).Once().
+		).Return(&inventoryItem, nil).Once().
 		On(
 			"UpdateInventoryItem",
 			ctx,
-			expectedInventoryItem,
-		).Once()
+			&expectedInventoryItem,
+		).Return(nil).Once()
 
 	input := services.NewRemissionCreatorInput(storageId, productId, qty)
 
