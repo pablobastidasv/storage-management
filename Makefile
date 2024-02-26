@@ -1,4 +1,4 @@
-PHONY: run install generate build clean build/prod e2e/dev
+PHONY: run install generate build clean build/prod e2e/dev test
 
 
 install:
@@ -47,5 +47,10 @@ migrate/dev:
 	migrate -path database/migration/ -database "postgresql://postgres:secretpassword@localhost:5432/?sslmode=disable" -verbose up
 
 
-e2e/dev:
+e2e/dev: run/dev
 	cd e2e; npx playwright test --project chromium --ui
+
+
+test: run/db
+	go test ./...
+
