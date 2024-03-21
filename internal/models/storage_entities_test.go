@@ -36,7 +36,7 @@ func Test_CreateProduct_OK(t *testing.T) {
 
 			assert.Nil(t, err, "must not give any error")
 			assert.Equal(t, tC.input.id, product.Id.ToString(), "id must be the given")
-			assert.Equal(t, tC.input.name, product.Name, "name must be the given")
+			assert.Equal(t, models.ProductName(tC.input.name), product.Name, "name must be the given")
 			assert.Equal(
 				t,
 				tC.input.presentation,
