@@ -1,0 +1,14 @@
+{{ block PoductList .}}
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range .Product }}
+            <td>.Name</td>
+        {{ end }}
+    </tbody>
+</table>
+{{ end }}
