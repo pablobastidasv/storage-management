@@ -4,7 +4,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func HandleGetProducts(ctx *fiber.Ctx, storage ProductStorage) error {
+var storage ProductStorage
+
+func InitHandlers(s ProductStorage) {
+    storage = s
+}
+
+func HandleGetProducts(ctx *fiber.Ctx) error {
 	products, err := storage.ListProducts(ctx.Context())
 	if err != nil {
 		return err
