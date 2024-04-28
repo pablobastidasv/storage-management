@@ -6,11 +6,7 @@ install:
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 
 
-generate:
-	templ generate
-
-
-run: generate
+run: 
 	go run cmd/web-app/main.go
 
 
@@ -18,10 +14,6 @@ build/prod:
 	CGO_ENABLED=0 GOOS=linux go build -o dist/web-app cmd/web-app/main.go
 	cp -r templates dist/.
 	cp -r public/ dist/public
-
-
-migrate/prod:
-	migrate -path database/migration/ -database $(DATABASE_URL) -verbose up
 
 
 build: clean
@@ -34,7 +26,6 @@ clean:
 	rm -rf dist
 
 
-#run/dev: run/db migrate/dev
 run/dev: run/db
 	air
 
@@ -43,11 +34,7 @@ run/db:
 	docker compose up -d
 
 
-migrate/dev:
-	migrate -path database/migration/ -database "postgresql://postgres:secretpassword@localhost:5432/?sslmode=disable" -verbose up
-
-
-e2e/dev: run/dev
+e2e/dev:
 	cd e2e; npx playwright test --project chromium --ui
 
 
