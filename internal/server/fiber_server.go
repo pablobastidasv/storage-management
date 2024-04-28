@@ -25,7 +25,7 @@ type (
 
 func NewFiberServer(listenAddr string) *Server {
 	// Initialize standard Go html template engine
-	engine := html.New("./templates", ".gohtml")
+	engine := html.New("./templates", ".go.html")
 
 	app := fiber.New(fiber.Config{
 		Views:        engine,

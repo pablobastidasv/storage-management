@@ -14,7 +14,6 @@
 {{ define "products-list"}}
     <ul>
         {{ range .Products }}
-            {{- /*gotype: co.bastriguez/inventory/internal/handlers.Product*/ -}}
             <li>{{ .Name }} - {{ .Presentation }}</li>
         {{ end}}
     </ul>
