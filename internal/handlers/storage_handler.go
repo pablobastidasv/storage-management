@@ -56,6 +56,7 @@ func (r *StorageHandlers) HandlePutProducts(ctx *fiber.Ctx) error {
 
 func (r *StorageHandlers) HandleGetRemissions(ctx *fiber.Ctx) error {
 	var remissions []RemissionItem
+    // TODO: list remissions items
 	return ctx.Render("remissions", remissions)
 }
 

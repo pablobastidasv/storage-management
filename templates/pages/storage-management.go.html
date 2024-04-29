@@ -30,7 +30,6 @@
         <ul id="remissions">
             {{ range . }}
                 <li>
-                    {{- /*gotype: co.bastriguez/inventory/internal/routes.RemissionItem*/ -}}
                     {{.CreatedAt.Format "02/01/2006"}} - {{.ClientName}} - {{.ProductItem.Name}}
                     - {{.ProductItem.Amount}}
                 </li>

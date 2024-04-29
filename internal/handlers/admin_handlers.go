@@ -17,6 +17,10 @@ type Option struct {
 
 type AdminHandlers struct{}
 
+func (a *AdminHandlers) HandleAdminProductsPage(c *fiber.Ctx) error {
+	return c.Render("pages/admin", nil, "general-template")
+}
+
 func (a *AdminHandlers) HandleAdminHomePage(c *fiber.Ctx) error {
 	return c.Render("pages/admin", nil, "general-template")
 }

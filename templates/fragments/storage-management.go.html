@@ -1,9 +1,9 @@
 {{ define "product_record_form" }}
     <form hx-put="/storages/main/items">
         <div id="error-alert"></div>
-        <div>
-            <label for="product">Producto</label>
-            <select name="product" id="product">
+        <div class="mb-3">
+            <label for="product" class="form-label">Producto</label>
+            <select name="product" id="product" class="form-control">
                 <option value="">-- Seleccione un producto --</option>
                 {{range .}}
                     {{- /*gotype: co.bastriguez/inventory/internal/routes.Product*/ -}}
@@ -11,13 +11,13 @@
                 {{end}}
             </select>
         </div>
-        <div>
-            <label for="qty">Cantidad:</label>
-            <input id="qty" type="number" name="qty">
+        <div class="mb-3">
+            <label for="qty" class="form-label">Cantidad:</label>
+            <input id="qty" type="number" name="qty" class="form-control">
         </div>
 
         <div>
-            <button type="submit">Ingresar</button>
+            <button type="submit" class="btn btn-primary">Ingresar</button>
         </div>
     </form>
 {{ end }}

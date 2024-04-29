@@ -1,49 +1,58 @@
 {{define "admin_products_section"}}
-    <h2>Products</h2>
+<h2>Products</h2>
 
-    <button class="btn btn-primary"
-            hx-get="/products/new"
-            hx-target="#right-drawer">
-        Create
-    </button>
+<button class="btn btn-primary" hx-get="/products/new" hx-target="#right-drawer">
+    Crear
+</button>
 
-    <div hx-trigger="product-created from:body, load" hx-get="/products">
-    </div>
+<div hx-trigger="product-created from:body, load" hx-get="/products">
+</div>
 {{end}}
 
 {{ define "products-list"}}
-    <ul>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Presentacion</th>
+        </tr>
+    </thead>
+    <tbody>
         {{ range .Products }}
-            <li>{{ .Name }} - {{ .Presentation }}</li>
+        <tr>
+            <td>{{ .Name }}</td>
+            <td>{{ .Presentation }}</td>
+        </tr>
         {{ end}}
-    </ul>
+    </tbody>
+</table>
 {{ end}}
 
 {{define "admin_products_add_form"}}
-    <h2>Add product</h2>
-    <form hx-post="/products">
-        <div>
-            <label for="name">
-                Name:
-            </label>
-            <input type="text" id="name" name="name">
-        </div>
-        <div>
-            <label for="presentation">
-                Presentación:
-            </label>
-            <select name="presentation" id="presentation">
-                <option value="">-- Seleccione la presentación --</option>
-                {{ range .Presentations }}
-                    <option value="{{ .Id }}">{{ .Label }}</option>
-                {{ end }}
-            </select>
-        </div>
+<h2>Add product</h2>
+<form hx-post="/products">
+    <div class="md-3">
+        <label for="name" class="form-label">
+            Nombre:
+        </label>
+        <input type="text" id="name" name="name" class="form-control">
+    </div>
+    <div class="md-3">
+        <label for="presentation" class="form-label">
+            Presentación:
+        </label>
+        <select name="presentation" id="presentation" class="form-control">
+            <option value="">-- Seleccione la presentación --</option>
+            {{ range .Presentations }}
+            <option value="{{ .Id }}">{{ .Label }}</option>
+            {{ end }}
+        </select>
+    </div>
 
-        <div>
-            <button type="submit" class="btn btn-primary">
-                Guardar
-            </button>
-        </div>
-    </form>
+    <div>
+        <button type="submit" class="btn btn-primary">
+            Guardar
+        </button>
+    </div>
+</form>
 {{end}}

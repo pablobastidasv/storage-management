@@ -85,6 +85,7 @@ func (s *Server) HandleStoragesEndpoints(storageHandler *handlers.StorageHandler
 
 func (s *Server) HandleAdminEndpoints(adminHandler *handlers.AdminHandlers) {
 	s.app.Get("/admin", s.isAuthenticated, adminHandler.HandleAdminHomePage)
+	s.app.Get("/admin/products", s.isAuthenticated, adminHandler.HandleAdminProductsPage)
 	s.app.Get("/products/new", s.isAuthenticated, adminHandler.HandleAdminCreateProductFormFragment)
 }
 

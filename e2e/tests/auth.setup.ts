@@ -19,7 +19,7 @@ setup('authenticate', async ({ page }) => {
 
     await page.waitForURL('http://127.0.0.1:8080/');
 
-    await expect(page.getByText(/Welcome/)).toBeVisible();
+    await expect(page.getByText(/Bienvenido/)).toBeVisible();
 
     await page.context().storageState({ path: authFile })
 });
