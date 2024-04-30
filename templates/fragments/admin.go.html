@@ -1,15 +1,4 @@
-{{define "admin_products_section"}}
-<h2>Products</h2>
-
-<button class="btn btn-primary" hx-get="/products/new" hx-target="#right-drawer">
-    Crear
-</button>
-
-<div hx-trigger="product-created from:body, load" hx-get="/products">
-</div>
-{{end}}
-
-{{ define "products-list"}}
+{{define "products-list"}}
 <table class="table">
     <thead>
         <tr>
@@ -29,7 +18,7 @@
 {{ end}}
 
 {{define "admin_products_add_form"}}
-<h2>Add product</h2>
+<h2>Crear un producto</h2>
 <form hx-post="/products">
     <div class="md-3">
         <label for="name" class="form-label">
@@ -56,3 +45,11 @@
     </div>
 </form>
 {{end}}
+
+
+{{ define "admin-nav" }}
+<nav class="nav">
+    <a class="nav-link active" href="/admin/products">Productos</a>
+    <a class="nav-link active" href="/admin/client">Clientes</a>
+</nav>
+{{ end }}

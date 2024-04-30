@@ -4,10 +4,13 @@
 
 <body>
     {{ template "header" .}}
+    <section>
+        <h1>Consola de administración</h1>
 
-    <main>
-        {{embed}}
-    </main>
+        {{ template "admin-nav" .}}
+    </section>
+
+    {{embed}}
 
     {{ template "footer" .}}
 </body>

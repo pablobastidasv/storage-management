@@ -1,0 +1,10 @@
+<admin-main>
+    <h2>Products</h2>
+
+    <button class="btn btn-primary" hx-get="/products/new" hx-target="#right-drawer">
+        Crear
+    </button>
+
+    <div hx-trigger="product-created from:body, load" hx-get="/products">
+    </div>
+</admin-main>
