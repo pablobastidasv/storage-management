@@ -6,16 +6,24 @@ import (
 	"co.bastriguez/inventory/internal/models"
 )
 
-const (
-	productCreatedEvent string = "product-created"
-)
-
 type Option struct {
 	Id    string
 	Label string
 }
 
 type AdminHandlers struct{}
+
+func (a *AdminHandlers) HandleAdminClientsPage(c *fiber.Ctx) error {
+	return c.Render("pages/admin-clients", nil, "admin-template")
+}
+
+func (a *AdminHandlers) HandleAdminCreateClientFormFragment(c *fiber.Ctx) error {
+	params := struct {
+	}{}
+
+	c.Response().Header.Add(hxTrigger, openRightDrawerEvent)
+	return c.Render("admin_clients_add_form", params)
+}
 
 func (a *AdminHandlers) HandleAdminProductsPage(c *fiber.Ctx) error {
 	return c.Render("pages/admin-products", nil, "admin-template")

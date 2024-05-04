@@ -10,8 +10,18 @@ import (
 	"co.bastriguez/inventory/internal/services"
 )
 
+const (
+	productCreatedEvent string = "product-created"
+)
+
 type ProductHandlers struct {
 	service services.ProductsService
+}
+
+func NewProductHandler(service services.ProductsService) *ProductHandlers {
+	return &ProductHandlers{
+		service: service,
+	}
 }
 
 func (p *ProductHandlers) HandlePostProducts(c *fiber.Ctx) error {
@@ -56,10 +66,4 @@ func (p *ProductHandlers) HandleGetProducts(c *fiber.Ctx) error {
 	}
 
 	return c.Render("products-list", params)
-}
-
-func NewProductHandler(service services.ProductsService) *ProductHandlers {
-	return &ProductHandlers{
-		service: service,
-	}
 }

@@ -50,6 +50,36 @@
 {{ define "admin-nav" }}
 <nav class="nav">
     <a class="nav-link active" href="/admin/products">Productos</a>
-    <a class="nav-link active" href="/admin/client">Clientes</a>
+    <a class="nav-link active" href="/admin/clients">Clientes</a>
 </nav>
+{{ end }}
+
+{{define "admin_clients_add_form"}}
+<h2>Crear un client</h2>
+<form hx-post="/clients">
+    <div class="md-3">
+        <label for="id_type" class="form-label">Tipo de documento:</label>
+        <select name="id_type" id="id_type" class="form-control" autofocus>
+            <option value="">-- Seleccione una opción --</option>
+            <option value="NIT">N.I.T.</option>
+            <option value="CC">Cédula de ciudadanía</option>
+            <option value="CE">Cédula de extrangería</option>
+        </select>
+    </div>
+    <div class="md-3">
+        <label for="id_number" class="form-label">Número de identificación:</label>
+        <input type="text" id="id_number" name="id_number" class="form-control">
+    </div>
+    <div class="md-3">
+        <label for="name" class="form-label">
+            Nombre:
+        </label>
+        <input type="text" id="name" name="name" class="form-control">
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">
+            Guardar
+        </button>
+    </div>
+</form>
 {{ end }}

@@ -34,6 +34,13 @@ func main() {
 
 	fiberServer.HandleProductsEndpoints(productHandler)
 
+    // Client service
+    clientRepository := repository.NewClientMongoRepository(db)
+    clientService := services.NewClientService(clientRepository)
+    clientHandler := handlers.NewClientHandler(clientService)
+
+    fiberServer.HandleClientsEndpoints(clientHandler)
+
 	// Persistence implemented interface
 	storageRepo := repository.NewStorageMongoRepository(db)
 	storageService := services.NewStorageService(storageRepo, productRepo)

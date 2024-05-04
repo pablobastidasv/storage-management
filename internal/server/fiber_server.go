@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,7 +11,6 @@ import (
 
 	"co.bastriguez/inventory/internal/authenticator"
 	"co.bastriguez/inventory/internal/handlers"
-	"co.bastriguez/inventory/internal/services"
 )
 
 type (
@@ -29,7 +27,7 @@ func NewFiberServer(listenAddr string) *Server {
 
 	app := fiber.New(fiber.Config{
 		Views:        engine,
-		ErrorHandler: ErrorHandler,
+		ErrorHandler: handlers.ErrorHandler,
 	})
 	app.Use(logger.New())
 	app.Use(recover.New())
@@ -66,8 +64,14 @@ func (s *Server) loadAuth() {
 func (s *Server) HandleProductsEndpoints(productHandler *handlers.ProductHandlers) {
 	productsApi := s.app.Group("/products", s.isAuthenticated)
 
-	productsApi.Get("/", s.isAuthenticated, productHandler.HandleGetProducts)
-	productsApi.Post("/", s.isAuthenticated, productHandler.HandlePostProducts)
+	productsApi.Get("/", productHandler.HandleGetProducts)
+	productsApi.Post("/", productHandler.HandlePostProducts)
+}
+
+func (s *Server) HandleClientsEndpoints(clientHandlers *handlers.ClientHandlers) {
+	clientsApi := s.app.Group("/clients", s.isAuthenticated)
+
+	clientsApi.Post("/", clientHandlers.HandlePostClients)
 }
 
 func (s *Server) HandleStoragesEndpoints(storageHandler *handlers.StorageHandlers) {
@@ -85,8 +89,12 @@ func (s *Server) HandleStoragesEndpoints(storageHandler *handlers.StorageHandler
 
 func (s *Server) HandleAdminEndpoints(adminHandler *handlers.AdminHandlers) {
 	s.app.Get("/admin", s.isAuthenticated, adminHandler.HandleAdminHomePage)
+
 	s.app.Get("/admin/products", s.isAuthenticated, adminHandler.HandleAdminProductsPage)
-	s.app.Get("/products/new", s.isAuthenticated, adminHandler.HandleAdminCreateProductFormFragment)
+	s.app.Get("/admin/products/new", s.isAuthenticated, adminHandler.HandleAdminCreateProductFormFragment)
+
+	s.app.Get("/admin/clients", s.isAuthenticated, adminHandler.HandleAdminClientsPage)
+	s.app.Get("/admin/clients/new", s.isAuthenticated, adminHandler.HandleAdminCreateClientFormFragment)
 }
 
 func (s *Server) Start() error {
@@ -98,18 +106,3 @@ func (s *Server) Start() error {
 	return s.app.Listen(s.listenAddr)
 }
 
-func ErrorHandler(ctx *fiber.Ctx, err error) error {
-	var wrongParameter *services.WrongParameter
-	if errors.As(err, &wrongParameter) {
-		ctx.Response().Header.Add("HX-Retarget", "#error-alert")
-		return ctx.Render("alert-messages", &AlertMessage{Message: err.Error()})
-	}
-
-	log.Printf("there was a unexpected error, it message is %s", err.Error())
-	ctx.Status(200).Response().Header.Add("HX-Redirect", "https://http.cat/status/500")
-	return nil
-}
-
-type AlertMessage struct {
-	Message string
-}

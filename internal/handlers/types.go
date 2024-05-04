@@ -5,12 +5,25 @@ import (
 )
 
 const (
+	hxRetarget            = "HX-Retarget"
 	hxTrigger             = "HX-Trigger"
+	errorAlertId          = "#error-alert"
 	openRightDrawerEvent  = "open-right-drawer"
 	closeRightDrawerEvent = "close-right-drawer"
+
+	Primary   AlertMessageLevel = "primary"
+	Secondary                   = "secondary"
+	Success                     = "success"
+	Danger                      = "danger"
+	Warning                     = "warning"
+	Info                        = "info"
+	Light                       = "light"
+	Dark                        = "dark"
 )
 
 type (
+	AlertMessageLevel string
+
 	Product struct {
 		Id           string
 		Name         string

@@ -1,4 +1,5 @@
 {{ define "head" }}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -35,4 +36,11 @@
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
     crossorigin="anonymous"></script>
 
+{{end}}
+
+{{define "alert-messages"}}
+<div class="alert alert-{{.Level}} alert-dismissible fade show" role="alert">
+    {{ .Message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 {{end}}
