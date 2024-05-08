@@ -19,6 +19,7 @@
 
 {{define "admin_products_add_form"}}
 <h2>Crear un producto</h2>
+<div id="validation-messages"></div>
 <form hx-post="/products">
     <div class="md-3">
         <label for="name" class="form-label">
@@ -56,6 +57,7 @@
 
 {{define "admin_clients_add_form"}}
 <h2>Crear un client</h2>
+<div id="validation-messages"></div>
 <form hx-post="/clients">
     <div class="md-3">
         <label for="id_type" class="form-label">Tipo de documento:</label>

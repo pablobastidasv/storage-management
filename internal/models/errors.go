@@ -1,7 +1,21 @@
 package models
 
-type DomainError struct {
-	desc string
+import (
+	"strings"
+)
+
+type (
+	DomainError struct {
+		desc string
+	}
+
+	ValidationError struct {
+		Messages []string
+	}
+)
+
+func (e *ValidationError) Error() string {
+	return strings.Join(e.Messages, ";")
 }
 
 func (e *DomainError) Error() string {
@@ -12,4 +26,10 @@ func NewDomainError(description string) *DomainError {
 	return &DomainError{
 		desc: description,
 	}
+}
+
+func NewValidationError(messages []string) *ValidationError {
+    return &ValidationError{
+        Messages: messages,
+    }
 }

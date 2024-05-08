@@ -25,7 +25,7 @@ test('creating a new client', async ({page}) => {
     await page.goto('http://127.0.0.1:8080/admin/clients');
 
     const docType = "NIT"
-    const docNumber = "1090897678"
+    const docNumber = randomString(10)
     const name = randomString(10)
 
     await page.getByRole('button', {name: "Crear"}).click()
@@ -35,5 +35,5 @@ test('creating a new client', async ({page}) => {
 
     await page.getByRole("button", {name:'Guardar'}).click()
 
-    await expect(page.getByText("Client created successfully.")).toBeVisible()
+    await expect(page.getByText("Cliente creado.")).toBeVisible()
 })

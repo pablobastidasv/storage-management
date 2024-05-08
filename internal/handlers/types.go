@@ -5,9 +5,11 @@ import (
 )
 
 const (
-	hxRetarget            = "HX-Retarget"
-	hxTrigger             = "HX-Trigger"
-	errorAlertId          = "#error-alert"
+	hxRetarget   = "HX-Retarget"
+	hxTrigger    = "HX-Trigger"
+	errorAlertId = "#error-alert"
+	messagesId   = "#validation-messages"
+
 	openRightDrawerEvent  = "open-right-drawer"
 	closeRightDrawerEvent = "close-right-drawer"
 

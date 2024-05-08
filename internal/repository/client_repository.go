@@ -8,7 +8,7 @@ import (
 )
 
 type ClientRepository interface {
-	Save(context.Context, models.Client) error
+	SaveClient(context.Context, models.Client) error
 }
 
 const ClientsCollectionName = "clients"
@@ -25,7 +25,7 @@ func NewClientMongoRepository(db *mongo.Database) ClientRepository {
 	}
 }
 
-func (m mongoClientRepository) Save(ctx context.Context, client models.Client) error {
+func (m mongoClientRepository) SaveClient(ctx context.Context, client models.Client) error {
 	_, err := m.collection.InsertOne(ctx, client)
 
 	return err

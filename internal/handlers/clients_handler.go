@@ -43,7 +43,7 @@ func (ch ClientHandlers) HandlePostClients(ctx *fiber.Ctx) error {
 	}
 
 	message := &AlertMessage{
-		Message: "Client created successfully.",
+		Message: "Cliente creado.",
         Level: Success,
 	}
 	ctx.Render("alert-messages", message)
