@@ -1,13 +1,17 @@
-PHONY: run install generate build clean build/prod e2e/dev test
+PHONY: run install generate build clean build/prod e2e/dev test generate
 
 
 install:
-	go install github.com/cosmtrek/air@latest
-	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	go install github.com/air-verse/air@latest
+	go install github.com/vektra/mockery/v2@v2.43.2
 
 
 run: 
 	go run cmd/web-app/main.go
+
+
+generate:
+	@go generate ./...
 
 
 build/prod:
