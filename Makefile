@@ -2,8 +2,9 @@ PHONY: run install generate build clean build/prod e2e/dev test
 
 
 install:
-	go install github.com/cosmtrek/air@latest
-	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	go mod download
+
+	cd e2e/ && npx playwrigth install
 
 
 generate:
