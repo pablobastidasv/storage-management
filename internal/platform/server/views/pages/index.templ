@@ -1,0 +1,9 @@
+package pages
+
+import "co.bastriguez/inventory/internal/platform/server/views/layouts"
+
+templ hello(name string) {
+	@layouts.Main() {
+		<div>Hello, { name }</div>
+	}
+}

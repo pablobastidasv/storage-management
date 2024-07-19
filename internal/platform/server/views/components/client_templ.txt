@@ -1,0 +1,1 @@
+<div data-testid=\"client-form\"><select name=\"id_type\"></select> <input name=\"id_number\"> <input name=\"name\"></div>

@@ -1,0 +1,27 @@
+package layouts
+
+import "co.bastriguez/inventory/internal/platform/server/views/components"
+
+templ Main() {
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=1440, initial-scale=1.0"/>
+			<title>Bastriguez</title>
+		</head>
+		<body>
+			<header>
+				<h1>Bastriguez</h1>
+				<div>
+					Profile
+				</div>
+				@components.MainLeftMenu()
+			</header>
+			<content>
+				<div>
+					{ children... }
+				</div>
+			</content>
+		</body>
+	</html>
+}

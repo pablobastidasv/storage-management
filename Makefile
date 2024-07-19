@@ -1,9 +1,10 @@
-PHONY: run install generate build clean build/prod e2e/dev test generate
+PHONY: run install generate build clean build/prod e2e/dev test generate live
 
 
 install:
 	go install github.com/air-verse/air@latest
 	go install github.com/vektra/mockery/v2@v2.43.2
+	go install github.com/a-h/templ/cmd/templ@latest
 
 
 run: 
@@ -30,8 +31,16 @@ clean:
 	rm -rf dist
 
 
-run/dev: run/db
+live/templ:
+	templ generate --watch --proxy="http://localhost:8080" --open-browser=false -v
+
+
+live/server:
 	air
+
+
+live: run/db
+	make -j5 live/templ live/server
 
 
 run/db:
