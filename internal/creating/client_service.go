@@ -16,8 +16,8 @@ func NewClientService(repo inventory.ClientRepository) ClientCreator {
 	}
 }
 
-func (c *clientService) Create(ctx context.Context, docType, docNumber, name string) error {
-    client, err := inventory.NewClient(docType, docNumber, name)
+func (c *clientService) Create(ctx context.Context, docType, docNumber, name, address, email, phone string) error {
+    client, err := inventory.NewClient(docType, docNumber, name, address, email, phone)
     if err != nil {
         return err
     }

@@ -10,16 +10,22 @@ import (
 const CreateCommandType command.Type = "command.creating.client"
 
 type CreateClientCommand struct {
-	docType   string
-	docNumber string
-	name      string
+	docType     string
+	docNumber   string
+	name        string
+	address     string
+	email       string
+	phoneNumber string
 }
 
-func NewCreateClientCommand(docType, docNumber, name string) CreateClientCommand {
+func NewCreateClientCommand(docType, docNumber, name, address, email, phoneNumber string) CreateClientCommand {
 	return CreateClientCommand{
-		docType:   docType,
-		docNumber: docNumber,
-		name:      name,
+		docType:     docType,
+		docNumber:   docNumber,
+		name:        name,
+		address:     address,
+		email:       email,
+		phoneNumber: phoneNumber,
 	}
 }
 
@@ -48,5 +54,8 @@ func (h CreateClientCommandHandler) Handle(ctx context.Context, cmd command.Comm
 		createClientCommand.docType,
 		createClientCommand.docNumber,
 		createClientCommand.name,
+        createClientCommand.address,
+        createClientCommand.email,
+        createClientCommand.phoneNumber,
 	)
 }

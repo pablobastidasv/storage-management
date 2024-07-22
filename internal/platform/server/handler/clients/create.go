@@ -11,9 +11,12 @@ import (
 )
 
 type createRequest struct {
-	IdType   string `form:"id_type"`
-	IdNumber string `form:"id_number"`
-	Name     string `form:"name"`
+	DocType     string `form:"doc_type"`
+	IdNumber    string `form:"doc_number"`
+	Name        string `form:"name"`
+	Address     string `form:"address"`
+	Email       string `form:"email"`
+	PhoneNumber string `form:"phone_number"`
 }
 
 func PostClientHandler(bus command.Bus) fiber.Handler {
@@ -21,7 +24,7 @@ func PostClientHandler(bus command.Bus) fiber.Handler {
 		var req createRequest
 		c.BodyParser(&req)
 
-		cmd := creating.NewCreateClientCommand(req.IdType, req.IdNumber, req.Name)
+		cmd := creating.NewCreateClientCommand(req.DocType, req.IdNumber, req.Name, req.Address, req.Email, req.PhoneNumber)
 		err := bus.DispatchCommand(c.Context(), cmd)
 		if err != nil {
 			// TODO: Check how to have a global exception handler for

@@ -21,7 +21,7 @@ func Test_ClientService_CreateClient_Error(t *testing.T) {
 	repomock.On("Save", mock.Anything, mock.Anything).Return(errors.New("there was an unexpected error"))
 
 	sut := creating.NewClientService(repomock)
-	err := sut.Create(context.Background(), docType, docNumber, name)
+	err := sut.Create(context.Background(), docType, docNumber, name, "", "", "")
 
 	assert.Error(t, err)
 }
@@ -30,15 +30,26 @@ func Test_ClientService_CreateClient_Succeed(t *testing.T) {
 	docType := "CC"
 	docNumber := "1234567890"
 	name := "Pepe Perez"
+    address := "Address 15"
+    email := "email@email.test"
+    phone := "0123456789"
 
-    expectedClient, err := inventory.NewClient(docType, docNumber, name)
-    assert.NoError(t, err)
+    expectedClient := inventory.Client{
+    	Document:          inventory.Document{
+    		DocumentType: inventory.DocumentType(docType),
+    		Number:       inventory.DocumentNumber(docNumber),
+    	},
+    	Name:              inventory.ClientName(name),
+    	Address:           inventory.ClientAddress(address),
+    	Email:             inventory.ClientEmail(email),
+    	ClientPhoneNumber: inventory.ClientPhoneNumber(phone),
+    }
 
 	repomock := new(storagemocks.ClientPersister)
 	repomock.On("Save", mock.Anything, expectedClient).Return(nil)
 
     sut := creating.NewClientService(repomock)
-    err = sut.Create(context.Background(), docType, docNumber, name)
+    err := sut.Create(context.Background(), docType, docNumber, name, address, email, phone)
 
     assert.NoError(t, err)
 }

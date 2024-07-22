@@ -2,69 +2,52 @@ package components_test
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"testing"
 
 	"co.bastriguez/inventory/internal/platform/server/views/components"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/a-h/templ"
 	"github.com/stretchr/testify/assert"
 )
 
+func Render(component templ.Component) (*goquery.Document, error) {
+	r, w := io.Pipe()
+	go func() {
+		_ = component.Render(context.Background(), w)
+		_ = w.Close()
+	}()
+	return goquery.NewDocumentFromReader(r)
+}
+
 func TestClientForm(t *testing.T) {
+	doc, err := Render(components.ClientForm())
+	assert.NoError(t, err, "Error when reading template")
 
-	t.Run("client component is rendered", func(t *testing.T) {
-		r, w := io.Pipe()
-		go func() {
-			_ = components.ClientForm().Render(context.Background(), w)
-			_ = w.Close()
-		}()
-		doc, err := goquery.NewDocumentFromReader(r)
-		assert.NoError(t, err, "Error when reading template")
-
+	t.Run("client component is rendered with all fields", func(t *testing.T) {
 		if doc.Find(`[data-testid="client-form"]`).Length() == 0 {
 			t.Errorf("data-testid with value client-form is expected")
 		}
+
+		inputFields := []string{"doc_number", "name", "address", "email", "phone_number"}
+
+		for _, n := range inputFields {
+			selector := fmt.Sprintf(`input[name="%s"]`, n)
+			if doc.Find(selector).Length() == 0 {
+				t.Errorf("input with name '%s' is needed", n)
+			}
+		}
+
+		if doc.Find(`select[name="doc_type"]`).Length() == 0 {
+			t.Errorf("input with name 'id_type' is needed")
+		}
+
 	})
 
-	t.Run("the document type field is a select and it's named 'id_type'", func(t *testing.T) {
-		r, w := io.Pipe()
-		go func() {
-			_ = components.ClientForm().Render(context.Background(), w)
-			_ = w.Close()
-		}()
-		doc, err := goquery.NewDocumentFromReader(r)
-		assert.NoError(t, err, "Error when reading template")
-
-		if doc.Find(`select[name="id_type"]`).Length() == 0 {
-			t.Errorf("input with name id_type is needed")
-		}
+	t.Run("The form component does a hx-push to the /clients endpoint", func(t *testing.T) {
+		postAddrs, exists := doc.Find(`[data-testid="client-form"]`).Attr("hx-post")
+		assert.True(t, exists, "destination when post not defined")
+		assert.Equal(t, "/clients", postAddrs, "form must post to /clients url")
 	})
-
-	t.Run("the document number field is name 'id_number'", func(t *testing.T) {
-		r, w := io.Pipe()
-		go func() {
-			_ = components.ClientForm().Render(context.Background(), w)
-			_ = w.Close()
-		}()
-		doc, err := goquery.NewDocumentFromReader(r)
-		assert.NoError(t, err, "Error when reading template")
-
-		if doc.Find(`input[name="id_number"]`).Length() == 0 {
-			t.Errorf("input with name id_number is needed")
-		}
-	})
-
-    t.Run("the name field is named 'name'", func(t *testing.T) {
-		r, w := io.Pipe()
-		go func() {
-			_ = components.ClientForm().Render(context.Background(), w)
-			_ = w.Close()
-		}()
-		doc, err := goquery.NewDocumentFromReader(r)
-		assert.NoError(t, err, "Error when reading template")
-
-		if doc.Find(`input[name="name"]`).Length() == 0 {
-			t.Errorf("input with name 'name' is needed")
-		}
-    })
 }

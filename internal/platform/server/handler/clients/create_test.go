@@ -27,7 +27,7 @@ func TestPostClientHandler_Create(t *testing.T) {
 		bus.ExpectedCalls = nil
 		bus.On("DispatchCommand", mock.Anything, mock.Anything).Return(inventory.ErrInvalidClientName)
 
-		data := "id_type=CC&id_number=1234567890"
+		data := "doc_type=CC&doc_number=1234567890"
 
 		req := httptest.NewRequest("POST", "/clients", strings.NewReader(data))
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -41,10 +41,10 @@ func TestPostClientHandler_Create(t *testing.T) {
 	t.Run("given a valid request it returns 201", func(t *testing.T) {
 		bus.ExpectedCalls = nil
 
-		expectedCommand := creating.NewCreateClientCommand("CC", "1234567890", "Jose")
+		expectedCommand := creating.NewCreateClientCommand("CC", "1234567890", "Jose", "Av", "strst@str.md", "012345677")
 		bus.On("DispatchCommand", mock.Anything, expectedCommand).Return(nil)
 
-		data := "id_type=CC&id_number=1234567890&name=Jose"
+		data := "doc_type=CC&doc_number=1234567890&name=Jose&address=Av&email=strst@str.md&phone_number=012345677"
 
 		req := httptest.NewRequest("POST", "/clients", strings.NewReader(data))
 		req.Header.Add("Content-Type", "application/x-www-form-urlencoded")

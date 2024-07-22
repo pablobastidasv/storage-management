@@ -1,9 +1,33 @@
 package components
 
+var docTypeOptions = []SelectOption{
+{
+Value: "",
+Label: "Seleccione una opción",
+},
+{
+Value: "CC",
+Label: "Cédula de ciudadanía",
+},
+{
+Value: "NIT",
+Label: "NIT",
+},
+{
+Value: "CE",
+Label: "Cédula de extranjería",
+},
+}
+
 templ ClientForm() {
-	<div data-testid="client-form">
-		<select name="id_type"></select>
-		<input name="id_number"/>
-		<input name="name"/>
-	</div>
+<form data-testid="client-form" hx-post="/clients">
+    @Select("doc_type", SelectAttrs{Label: "Tipo de documento:", Options: docTypeOptions})
+    @Input("doc_number", InputAttrs{Label: "Numero de documento:"})
+    @Input("name", InputAttrs{Label: "Nombre:"})
+    @Input("address", InputAttrs{Label: "Direccion:"})
+    @Input("email", InputAttrs{Label: "Direccion de correo:"})
+    @Input("phone_number", InputAttrs{Label: "Número celular:"})
+    @Button(ButtonAttrs{Label: "Cancelar"})
+    @Button(ButtonAttrs{Label: "Save", Type: "submit"})
+</form>
 }

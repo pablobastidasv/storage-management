@@ -24,7 +24,7 @@ type Server struct {
 
 func New(host string, port uint, repository inventory.ClientRepository, bus command.Bus) Server {
 	engine := fiber.New()
-    engine.Use(slogfiber.New(slog.Default()))
+	engine.Use(slogfiber.New(slog.Default()))
 
 	srv := Server{
 		engine:    engine,
@@ -43,4 +43,5 @@ func (s *Server) Run() error {
 
 func (s *Server) registerRoutes() {
 	s.engine.Post("/clients", clients.PostClientHandler(s.bus))
+	s.engine.Get("/clients/new", clients.GetClientFormHandler())
 }

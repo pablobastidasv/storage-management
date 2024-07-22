@@ -11,13 +11,19 @@ var ErrInvalidDocumentNumber = errors.New("invalid document number")
 var ErrInvalidClientName = errors.New("invalid client name")
 
 type (
-	DocumentType   string
-	DocumentNumber string
-	ClientName     string
+	DocumentType      string
+	DocumentNumber    string
+	ClientName        string
+	ClientAddress     string
+	ClientEmail       string
+	ClientPhoneNumber string
 
 	Client struct {
-		Document Document
-		Name     ClientName
+		Document          Document
+		Name              ClientName
+		Address           ClientAddress
+		Email             ClientEmail
+		ClientPhoneNumber ClientPhoneNumber
 	}
 
 	Document struct {
@@ -56,7 +62,7 @@ func NewDocumentNumber(documentNumber string) (DocumentNumber, error) {
 	return DocumentNumber(documentNumber), nil
 }
 
-func NewClient(docType, docNumber, name string) (Client, error) {
+func NewClient(docType, docNumber, name, address, email, phoneNumber string) (Client, error) {
 	documentType, err := NewDocumentType(docType)
 	if err != nil {
 		return Client{}, err

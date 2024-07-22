@@ -5,6 +5,7 @@ install:
 	go install github.com/air-verse/air@latest
 	go install github.com/vektra/mockery/v2@v2.43.2
 	go install github.com/a-h/templ/cmd/templ@latest
+	pnpm install -D tailwindcss
 
 
 run: 

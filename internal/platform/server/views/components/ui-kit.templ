@@ -1,0 +1,47 @@
+package components
+
+type (
+	InputAttrs struct {
+		Label string
+	}
+
+	SelectOption struct {
+		Value string
+		Label string
+	}
+	SelectAttrs struct {
+		Label   string
+		Options []SelectOption
+	}
+
+	ButtonAttrs struct {
+		Label string
+		Type  string
+	}
+)
+
+templ Input(name string, attrs InputAttrs) {
+	<div>
+		<label data-testid="label" for={ name }>{ attrs.Label }</label>
+		<input data-testid="input" name={ name }/>
+	</div>
+}
+
+templ Select(name string, attrs SelectAttrs) {
+	<div>
+		<label data-testid="label" for={ name }>{ attrs.Label }</label>
+		<select data-testid="select" name={ name }>
+			for _, opt := range attrs.Options {
+				<option value={ opt.Value }>{ opt.Label }</option>
+			}
+		</select>
+	</div>
+}
+
+templ Button(attrs ButtonAttrs) {
+	if attrs.Type != "" {
+		<button data-testid="button" type={ attrs.Type }>{ attrs.Label }</button>
+	} else {
+		<button data-testid="button" >{ attrs.Label }</button>
+	}
+}

@@ -1,0 +1,17 @@
+<div><label data-testid=\"label\" for=\"
+\">
+</label> <input data-testid=\"input\" name=\"
+\"></div>
+<div><label data-testid=\"label\" for=\"
+\">
+</label> <select data-testid=\"select\" name=\"
+\">
+<option value=\"
+\">
+</option>
+</select></div>
+<button data-testid=\"button\" type=\"
+\">
+</button>
+<button data-testid=\"button\">
+</button>
