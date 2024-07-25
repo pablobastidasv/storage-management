@@ -42,7 +42,7 @@ func Test_ClientService_CreateClient_Succeed(t *testing.T) {
     	Name:              inventory.ClientName(name),
     	Address:           inventory.ClientAddress(address),
     	Email:             inventory.ClientEmail(email),
-    	ClientPhoneNumber: inventory.ClientPhoneNumber(phone),
+    	PhoneNumber: inventory.ClientPhoneNumber(phone),
     }
 
 	repomock := new(storagemocks.ClientPersister)
@@ -52,4 +52,5 @@ func Test_ClientService_CreateClient_Succeed(t *testing.T) {
     err := sut.Create(context.Background(), docType, docNumber, name, address, email, phone)
 
     assert.NoError(t, err)
+    repomock.AssertExpectations(t)
 }

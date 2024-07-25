@@ -22,6 +22,7 @@ require (
 	github.com/go-jose/go-jose/v3 v3.0.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
+	github.com/tinygg/gofaker v1.0.8 // indirect
 	go.opentelemetry.io/otel v1.19.0 // indirect
 	go.opentelemetry.io/otel/trace v1.19.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect

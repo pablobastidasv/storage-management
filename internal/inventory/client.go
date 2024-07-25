@@ -19,11 +19,11 @@ type (
 	ClientPhoneNumber string
 
 	Client struct {
-		Document          Document
-		Name              ClientName
-		Address           ClientAddress
-		Email             ClientEmail
-		ClientPhoneNumber ClientPhoneNumber
+		Document    Document
+		Name        ClientName
+		Address     ClientAddress
+		Email       ClientEmail
+		PhoneNumber ClientPhoneNumber
 	}
 
 	Document struct {
@@ -62,6 +62,18 @@ func NewDocumentNumber(documentNumber string) (DocumentNumber, error) {
 	return DocumentNumber(documentNumber), nil
 }
 
+func NewClientAddress(address string) (ClientAddress, error) {
+	return ClientAddress(address), nil
+}
+
+func NewClientPhone(phone string) (ClientPhoneNumber, error) {
+	return ClientPhoneNumber(phone), nil
+}
+
+func NewClientEmail(email string) (ClientEmail, error) {
+	return ClientEmail(email), nil
+}
+
 func NewClient(docType, docNumber, name, address, email, phoneNumber string) (Client, error) {
 	documentType, err := NewDocumentType(docType)
 	if err != nil {
@@ -78,11 +90,29 @@ func NewClient(docType, docNumber, name, address, email, phoneNumber string) (Cl
 		return Client{}, err
 	}
 
+	clientAddress, err := NewClientAddress(address)
+	if err != nil {
+		return Client{}, err
+	}
+
+	clientPhone, err := NewClientPhone(phoneNumber)
+	if err != nil {
+		return Client{}, err
+	}
+
+	clientEmail, err := NewClientEmail(email)
+	if err != nil {
+		return Client{}, err
+	}
+
 	return Client{
 		Document: Document{
 			DocumentType: documentType,
 			Number:       documentNumber,
 		},
-		Name: clientName,
+		Name:        clientName,
+		Address:     clientAddress,
+		Email:       clientEmail,
+		PhoneNumber: clientPhone,
 	}, nil
 }
