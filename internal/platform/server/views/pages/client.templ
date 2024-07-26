@@ -1,7 +1,12 @@
 package pages
 
-import "co.bastriguez/inventory/internal/platform/server/views/components"
+import (
+	"co.bastriguez/inventory/internal/platform/server/views/components"
+	"co.bastriguez/inventory/internal/platform/server/views/layouts"
+)
 
 templ CreateClient() {
-	@components.ClientForm()
+	@layouts.Base() {
+		@components.ClientForm()
+	}
 }

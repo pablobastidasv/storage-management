@@ -25,6 +25,7 @@ type Server struct {
 func New(host string, port uint, repository inventory.ClientRepository, bus command.Bus) Server {
 	engine := fiber.New()
 	engine.Use(slogfiber.New(slog.Default()))
+    engine.Static("/statics", "./public")
 
 	srv := Server{
 		engine:    engine,
