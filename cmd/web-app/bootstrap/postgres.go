@@ -6,26 +6,27 @@ import (
 	"log/slog"
 	"os"
 
-    _ "github.com/lib/pq"
+	_ "github.com/lib/pq"
 )
 
 const (
 	host = "localhost"
 	port = 8080
 
-	dbUser = "inventory"
-	dbPass = "inventory"
+	dbUser = "postgres"
+	dbPass = "secretpassword"
 	dbHost = "localhost"
 	dbPort = "5432"
-	dbName = "inventory"
+	dbName = "bastriguez"
 )
 
 func dbOpen() (*sql.DB, error) {
 	postgresURI := generatePostgresUriFromEnvvars()
-	if env := os.Getenv(EnvVar); env != "" {
-        slog.Debug("using local/dev database uri")
+	if env := os.Getenv(EnvVar); env == "" {
+		slog.Debug("using local/dev database uri")
 		postgresURI = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", dbUser, dbPass, dbHost, dbPort, dbName)
 	}
+	slog.Debug(fmt.Sprintf("URI string %s", postgresURI))
 	return sql.Open("postgres", postgresURI)
 }
 

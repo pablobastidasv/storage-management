@@ -36,8 +36,14 @@ func TestInput(t *testing.T) {
 
 	t.Run("input name is the given value name", func(t *testing.T) {
 		attr, exists := input.Attr("name")
-		assert.True(t, exists, "the attribute attribute should exists")
+		assert.True(t, exists, "the attribute name should exists")
 		assert.Equal(t, name, attr, "name input value should be the name of the fields")
+	})
+
+	t.Run("input id is the given value name", func(t *testing.T) {
+		attr, exists := input.Attr("id")
+		assert.True(t, exists, "the attribute id should exists")
+		assert.Equal(t, name, attr, "id input value should be the name of the fields")
 	})
 }
 
@@ -80,6 +86,12 @@ func TestSelect(t *testing.T) {
 		nameValue, exists := sel.Attr("name")
 		assert.True(t, exists, "name attribute should be in the select")
 		assert.Equal(t, name, nameValue, "name attribute value should be the given value")
+	})
+
+	t.Run("select id is the given value", func(t *testing.T) {
+		idValue, exists := sel.Attr("id")
+		assert.True(t, exists, "id attribute should be in the select")
+		assert.Equal(t, name, idValue, "id attribute value should be the given value")
 	})
 
 	t.Run("select's options ammount is 2", func(t *testing.T) {

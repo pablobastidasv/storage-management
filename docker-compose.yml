@@ -2,9 +2,24 @@ version: "3.9"
 
 services:
   db:
-    image: mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: secretpassword
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    # or set shared memory limit when deploy via swarm stack
+    #volumes:
+    #  - type: tmpfs
+    #    target: /dev/shm
+    #    tmpfs:
+    #      size: 134217728 # 128*2^20 bytes = 128Mb
     ports:
-      - "27017:27017"
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: bastriguez
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8090:8080

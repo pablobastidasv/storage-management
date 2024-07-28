@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 
 	"co.bastriguez/inventory/internal/inventory"
 	"github.com/huandu/go-sqlbuilder"
@@ -30,10 +31,12 @@ func (r *ClientRepository) Save(c context.Context, client inventory.Client) erro
 		Address:   string(client.Address),
 		Email:     string(client.Email),
 		Phone:     string(client.PhoneNumber),
-	}).Build()
+	}).BuildWithFlavor(sqlbuilder.PostgreSQL)
 
 	// ctxTimeout, cancel := context.WithTimeout(ctx, r.dbTimeout)
 	// defer cancel()
+
+    slog.Debug(query)
 
 	// _, err := r.db.ExecContext(ctxTimeout, query, args...)
 	_, err := r.db.ExecContext(c, query, args...)

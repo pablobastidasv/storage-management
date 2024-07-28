@@ -24,7 +24,7 @@ func Test_ClientRepository_Save(t *testing.T) {
 		require.NoError(t, err, "error creating sqlmock")
 
 		sqlMock.ExpectExec(
-			"INSERT INTO clients (doc_type, doc_number, name, address, email, phone) VALUES (?, ?, ?, ?, ?, ?)").
+			"INSERT INTO clients (doc_type, doc_number, name, address, email, phone) VALUES ($1, $2, $3, $4, $5, $6)").
 			WithArgs(docType, docNum, name, address, email, phone).
 			WillReturnError(errors.New("something-failed"))
 
@@ -48,7 +48,7 @@ func Test_ClientRepository_Save(t *testing.T) {
 		require.NoError(t, err, "error creating sqlmock")
 
 		sqlMock.ExpectExec(
-			"INSERT INTO clients (doc_type, doc_number, name, address, email, phone) VALUES (?, ?, ?, ?, ?, ?)").
+			"INSERT INTO clients (doc_type, doc_number, name, address, email, phone) VALUES ($1, $2, $3, $4, $5, $6)").
 			WithArgs(docType, docNum, name, address, email, phone).
 			WillReturnResult(sqlmock.NewResult(0, 1))
 

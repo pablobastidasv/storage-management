@@ -1,10 +1,12 @@
 <div><label data-testid=\"label\" for=\"
 \">
-</label> <input data-testid=\"input\" name=\"
+</label> <input data-testid=\"input\" id=\"
+\" name=\"
 \"></div>
 <div><label data-testid=\"label\" for=\"
 \">
-</label> <select data-testid=\"select\" name=\"
+</label> <select data-testid=\"select\" id=\"
+\" name=\"
 \">
 <option value=\"
 \">

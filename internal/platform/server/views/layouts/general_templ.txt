@@ -1,3 +1,3 @@
-<html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=1440, initial-scale=1.0\"><title>Bastriguez</title><script scr=\"/statics/js/htmx.min.js\"></script></head><body><header><h1>Bastriguez</h1><div>Profile</div>
+<html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=1440, initial-scale=1.0\"><title>Bastriguez</title><script src=\"https://unpkg.com/htmx.org@2.0.1\" integrity=\"sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/\" crossorigin=\"anonymous\"></script><!--\t<script scr=\"/statics/js/htmx.min.js\"></script>--></head><body><header><h1>Bastriguez</h1><div>Profile</div>
 </header><content><div>
 </div></content></body></html>

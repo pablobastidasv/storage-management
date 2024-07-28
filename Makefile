@@ -6,6 +6,7 @@ install:
 	go install github.com/vektra/mockery/v2@v2.43.2
 	go install github.com/a-h/templ/cmd/templ@latest
 	pnpm install -D tailwindcss
+	brew install golang-migrate 
 
 
 run: 
@@ -40,7 +41,7 @@ live/server:
 	air
 
 
-live: run/db
+live: run/db migrate/local
 	make -j5 live/templ live/server
 
 
@@ -55,3 +56,10 @@ e2e/dev:
 test: run/db
 	go test ./...
 
+
+migrate: 
+	migrate -database ${POSTGRESQL_URL} -path db/migrations up
+
+
+migrate/local:
+	make migrate POSTGRESQL_URL=postgres://postgres:secretpassword@localhost:5432/bastriguez?sslmode=disable

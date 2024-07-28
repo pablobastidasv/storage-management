@@ -23,14 +23,14 @@ type (
 templ Input(name string, attrs InputAttrs) {
 	<div>
 		<label data-testid="label" for={ name }>{ attrs.Label }</label>
-		<input data-testid="input" name={ name }/>
+		<input data-testid="input" id={ name } name={ name }/>
 	</div>
 }
 
 templ Select(name string, attrs SelectAttrs) {
 	<div>
 		<label data-testid="label" for={ name }>{ attrs.Label }</label>
-		<select data-testid="select" name={ name }>
+		<select data-testid="select" id={ name } name={ name }>
 			for _, opt := range attrs.Options {
 				<option value={ opt.Value }>{ opt.Label }</option>
 			}
