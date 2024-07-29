@@ -6,10 +6,15 @@ import (
 	"fmt"
 )
 
+// root error used to typify an error in order to control it in the client response
+var ValidationError = errors.New("a validation error occurred")
+
 var ErrInvalidDocumentType = errors.New("invalid document type")
 var ErrInvalidDocumentNumber = errors.New("invalid document number")
 var ErrInvalidClientName = errors.New("invalid client name")
-
+var ErrInvalidEmail = errors.New("invalid email")
+var ErrEmptyEmail = errors.New("email cannot be empty")
+ 
 type (
 	DocumentType      string
 	DocumentNumber    string
