@@ -2,21 +2,48 @@ package inventory
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"net/mail"
+	"regexp"
+	"strings"
 )
 
 // root error used to typify an error in order to control it in the client response
-var ValidationError = errors.New("a validation error occurred")
+type ValidationError struct {
+	Message string
+	Details []FieldError
+}
 
-var ErrInvalidDocumentType = errors.New("invalid document type")
-var ErrInvalidDocumentNumber = errors.New("invalid document number")
-var ErrInvalidClientName = errors.New("invalid client name")
-var ErrInvalidEmail = errors.New("invalid email")
-var ErrEmptyEmail = errors.New("email cannot be empty")
- 
+func (v *ValidationError) Error() string {
+	return v.Message
+}
+
+func (v *ValidationError) AddDetail(field, message string) {
+	v.Details = append(v.Details, FieldError{
+		Field:    field,
+		Messsage: message,
+	})
+}
+
+type FieldError struct {
+	Field    string
+	Messsage string
+}
+
+func (f *FieldError) Error() string {
+	return fmt.Sprintf("%s: %s", f.Field, f.Messsage)
+}
+
+func NewFieldError(field, message string) *FieldError {
+	return &FieldError{
+		Field:    field,
+		Messsage: message,
+	}
+}
+
 type (
-	DocumentType      string
+	DocumentType int
+
 	DocumentNumber    string
 	ClientName        string
 	ClientAddress     string
@@ -37,6 +64,17 @@ type (
 	}
 )
 
+const (
+	DocTypeCC DocumentType = iota
+	DocTypeNit
+	DocTypeCE
+
+	fieldDocType   string = "doc_type"
+	fieldDocNumber string = "doc_number"
+	fieldEmail     string = "email"
+	fieldName      string = "name"
+)
+
 //go:generate mockery --case=snake --outpkg=storagemocks --output=../platform/storage/storagemocks --name ClientPersister
 type (
 	ClientRepository interface {
@@ -49,21 +87,41 @@ type (
 )
 
 func NewDocumentType(documentType string) (DocumentType, error) {
-	if documentType == "" {
-		return DocumentType(""), fmt.Errorf("%w, %s", ErrInvalidDocumentType, documentType)
+	if strings.Trim(documentType, " ") == "" {
+		return DocumentType(-1), NewFieldError(fieldDocType, "no puede estar vacio")
 	}
 
-	return DocumentType(documentType), nil
+	switch documentType {
+	case "CC":
+		return DocTypeCC, nil
+	case "NIT":
+		return DocTypeNit, nil
+	case "CE":
+		return DocTypeCE, nil
+	default:
+		msg := fmt.Sprintf("document type '%s' is not valid", documentType)
+		return DocumentType(-1), NewFieldError(fieldDocType, msg)
+	}
 }
 
 func NewClientName(name string) (ClientName, error) {
-	if name == "" {
-		return ClientName(""), fmt.Errorf("%w, %s", ErrInvalidClientName, name)
+	if strings.Trim(name, " ") == "" {
+		return ClientName(""), NewFieldError(fieldName, "no puede estar vacio")
 	}
 	return ClientName(name), nil
 }
 
 func NewDocumentNumber(documentNumber string) (DocumentNumber, error) {
+	pattern := regexp.MustCompile(`^[1-9]+\d{2,9}(-\d)?$`) 
+    if strings.Trim(documentNumber, " ") == "" {
+		return DocumentNumber(""), NewFieldError(fieldDocNumber, "no puede estar vacio")
+	}
+
+	if !pattern.MatchString(documentNumber) {
+		expectedErrorMessage := fmt.Sprintf("numero de documento '%s' no es valido", documentNumber)
+		return DocumentNumber(""), NewFieldError(fieldDocNumber, expectedErrorMessage)
+	}
+
 	return DocumentNumber(documentNumber), nil
 }
 
@@ -76,6 +134,14 @@ func NewClientPhone(phone string) (ClientPhoneNumber, error) {
 }
 
 func NewClientEmail(email string) (ClientEmail, error) {
+	if strings.Trim(email, " ") == "" {
+		return ClientEmail(""), NewFieldError(fieldEmail, "no puede estar vacio")
+	}
+
+	if _, err := mail.ParseAddress(email); err != nil {
+		return ClientEmail(""), NewFieldError(fieldEmail, "formato de email no es valido")
+	}
+
 	return ClientEmail(email), nil
 }
 
