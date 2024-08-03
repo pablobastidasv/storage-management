@@ -159,7 +159,7 @@ func TestDocNumber_InvalidDocumentNumber(t *testing.T) {
 
 			expectedErrorMessage := fmt.Sprintf("numero de documento '%s' no es valido", tc.invalidValue)
 			assert.Equal(tt, "doc_number", result.Field)
-            assert.Equal(tt, expectedErrorMessage, result.Messsage)
+			assert.Equal(tt, expectedErrorMessage, result.Messsage)
 		})
 	}
 }
@@ -207,6 +207,74 @@ func TestDocType_ValidValues(t *testing.T) {
 
 			assert.Nil(t, err, "no error expected")
 			assert.Equal(t, v.expected, result)
+		})
+	}
+}
+
+func TestPhoneNumber_ValidNumbers(t *testing.T) {
+	validNumbersTests := []struct {
+		number   string
+		expected inventory.ClientPhoneNumber
+	}{
+		{
+			number:   "3153256210",
+			expected: inventory.ClientPhoneNumber("3153256210"),
+		},
+		{
+			number:   "6013256210",
+			expected: inventory.ClientPhoneNumber("6013256210"),
+		},
+		{
+			number:   "",
+			expected: inventory.ClientPhoneNumber(""),
+		},
+	}
+
+	for _, test := range validNumbersTests {
+		testName := fmt.Sprintf("given valid number '%s' then no error is returned", test.number)
+		t.Run(testName, func(tt *testing.T) {
+			result, err := inventory.NewClientPhone(test.number)
+
+			assert.Nil(tt, err, "error is not expected")
+			assert.Equal(tt, test.expected, result)
+		})
+	}
+}
+
+func TestPhoneNumber_InvalidNumber(t *testing.T) {
+	testCase := []struct {
+		invalidNumber string
+	}{
+		{
+			invalidNumber: "123",
+		},
+		{
+			invalidNumber: "0625415323",
+		},
+		{
+			invalidNumber: "32541532336",
+		},
+		{
+			invalidNumber: "625 15 326",
+		},
+		{
+			invalidNumber: "315-1543252",
+		},
+	}
+
+	for _, tc := range testCase {
+		testName := fmt.Sprintf("given invalid phone number %s then error is returned", tc.invalidNumber)
+		t.Run(testName, func(tt *testing.T) {
+			_, err := inventory.NewClientPhone(tc.invalidNumber)
+			if err == nil {
+				tt.Fatalf("error was expected (%s)", tc.invalidNumber)
+			}
+
+			result := new(inventory.FieldError)
+			assert.ErrorAs(tt, err, &result, "error should be a FieldError")
+
+			assert.Equal(tt, "phone_number", result.Field)
+			assert.Equal(tt, "el numero de telefono/celular dado no es valido", result.Messsage)
 		})
 	}
 

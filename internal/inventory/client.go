@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"net/mail"
-	"regexp"
 	"strings"
+
+	"co.bastriguez/inventory/internal/inventory/validators"
 )
 
 // root error used to typify an error in order to control it in the client response
@@ -69,10 +70,11 @@ const (
 	DocTypeNit
 	DocTypeCE
 
-	fieldDocType   string = "doc_type"
-	fieldDocNumber string = "doc_number"
-	fieldEmail     string = "email"
-	fieldName      string = "name"
+	fieldDocType     string = "doc_type"
+	fieldDocNumber   string = "doc_number"
+	fieldEmail       string = "email"
+	fieldName        string = "name"
+	fieldPhoneNumber string = "phone_number"
 )
 
 //go:generate mockery --case=snake --outpkg=storagemocks --output=../platform/storage/storagemocks --name ClientPersister
@@ -112,12 +114,11 @@ func NewClientName(name string) (ClientName, error) {
 }
 
 func NewDocumentNumber(documentNumber string) (DocumentNumber, error) {
-	pattern := regexp.MustCompile(`^[1-9]+\d{2,9}(-\d)?$`) 
-    if strings.Trim(documentNumber, " ") == "" {
+	if strings.Trim(documentNumber, " ") == "" {
 		return DocumentNumber(""), NewFieldError(fieldDocNumber, "no puede estar vacio")
 	}
 
-	if !pattern.MatchString(documentNumber) {
+	if !validators.IsDocumentNumber(documentNumber) {
 		expectedErrorMessage := fmt.Sprintf("numero de documento '%s' no es valido", documentNumber)
 		return DocumentNumber(""), NewFieldError(fieldDocNumber, expectedErrorMessage)
 	}
@@ -130,6 +131,11 @@ func NewClientAddress(address string) (ClientAddress, error) {
 }
 
 func NewClientPhone(phone string) (ClientPhoneNumber, error) {
+	if phone != "" && !validators.IsPhoneNumber(phone) {
+		expectedErrorMessage := fmt.Sprintf("el numero de telefono/celular dado no es valido")
+		return ClientPhoneNumber(""), NewFieldError(fieldPhoneNumber, expectedErrorMessage)
+	}
+
 	return ClientPhoneNumber(phone), nil
 }
 
